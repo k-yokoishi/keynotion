@@ -1,16 +1,22 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import App from './App'
 import './index.css'
+import './content.css'
+import { SideBar } from './SideBar'
 
-const container = document.createElement('div')
-container.id = 'crx-root'
-document.body.append(container)
+const frame = document.getElementsByClassName('notion-frame')[0]
 
-console.log('content.tsx')
-const root = createRoot(container)
+if (!frame) {
+  console.warn('notion-frame not found.')
+}
+const appContainer = document.createElement('div')
+appContainer.classList.add('SideBar_container')
+appContainer.id = 'crx-root'
+frame.prepend(appContainer)
+const root = createRoot(appContainer)
+
 root.render(
   <React.StrictMode>
-    <App />
+    <SideBar />
   </React.StrictMode>
 )
