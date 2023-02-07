@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { styled } from '@stitches/react'
-import { findParentBlock, getHeaderLevel, HeaderLevel, isHeaderBlock } from './utils/notion'
+import { getHeaderLevel, HeaderLevel } from './utils/notion'
 
 type Heading = {
   id: string
@@ -11,42 +11,29 @@ type Heading = {
 export const SideBar = () => {
   const [headingList, setHeadingList] = useState<Heading[]>([])
 
-  const getMutationType = (mutation: MutationRecord) => {}
-
-  const onUpdateContent: MutationCallback = (mutations) => {
-    for (const mutation of mutations) {
-      const isCharacterAddition = mutation.type === 'characterData'
-      const isCharacterDeletion = mutation.type === 'childList'
-      console.log('mutation', mutation)
-      if (isCharacterAddition || isCharacterDeletion) {
-        const headerEl = findParentBlock(mutation.target)
-        if (!headerEl) return
-        if (!isHeaderBlock(headerEl)) return
-
-        const dataBlockId = headerEl?.getAttribute('data-block-id')
-        setHeadingList((prev) =>
-          prev.map((heading) =>
-            heading.id === dataBlockId
-              ? { ...heading, textContent: headerEl?.innerText ?? '' }
-              : heading
-          )
-        )
-      }
-    }
-  }
-  useEffect(() => {
-    setHeadingList([])
+  const initializeHeadingList = () => {
     const pageContent = document.querySelector('div.notion-page-content')
     if (pageContent === null) return
-    pageContent.querySelectorAll<HTMLDivElement>('[data-block-id]').forEach((el) => {
-      const level = getHeaderLevel(el)
-      if (level === null) return
-      setHeadingList((prev) => [
-        ...prev,
-        { id: el.getAttribute('data-block-id')!, level: level, textContent: el.innerText },
-      ])
-    })
-    const observer = new MutationObserver(onUpdateContent)
+
+    const headingList: Heading[] = Array.from(
+      pageContent.querySelectorAll<HTMLDivElement>('[data-block-id]')
+    )
+      .filter((el) => getHeaderLevel(el))
+      .map((el) => ({
+        id: el.getAttribute('data-block-id')!,
+        level: getHeaderLevel(el)!,
+        textContent: el.innerText,
+      }))
+    setHeadingList(headingList)
+  }
+
+  const filteredHeadingList = headingList.filter((heading) => heading.textContent !== '')
+  useEffect(() => {
+    initializeHeadingList()
+    const pageContent = document.querySelector('div.notion-page-content')
+    if (pageContent === null) return
+    // TODO: Finely update each heading item
+    const observer = new MutationObserver(initializeHeadingList)
     observer.observe(pageContent, { characterData: true, subtree: true, childList: true })
     return () => observer.disconnect()
   }, [])
@@ -56,7 +43,7 @@ export const SideBar = () => {
         <StyledOutlineHederTitle>Outline</StyledOutlineHederTitle>
       </StyledOutlineHeader>
       <StyledOutlineList>
-        {headingList.map((heading) => (
+        {filteredHeadingList.map((heading) => (
           <li key={heading.id}>
             <StyledOutlineItem
               css={{
