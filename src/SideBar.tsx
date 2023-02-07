@@ -46,6 +46,9 @@ export const SideBar = () => {
         {filteredHeadingList.map((heading) => (
           <li key={heading.id}>
             <StyledOutlineItem
+              onClick={() => {
+                location.hash = '#' + heading.id.replaceAll('-', '')
+              }}
               css={{
                 paddingLeft: (heading.level - 1) * 12 + 8,
               }}
