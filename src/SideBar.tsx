@@ -1,51 +1,110 @@
-/** @jsxImportSource @emotion/react */
 import { useEffect, useState } from 'react'
-import './SideBar.css'
-import { css } from '@emotion/react'
+import { styled } from '@stitches/react'
+import { findParentBlock, getHeaderLevel, HeaderLevel, isHeaderBlock } from './utils/notion'
 
 type Heading = {
   id: string
-  level: 1 | 2 | 3
+  level: HeaderLevel
   textContent: string
 }
 
 export const SideBar = () => {
   const [headingList, setHeadingList] = useState<Heading[]>([])
-  useEffect(() => {
-    const temp: Heading[] = []
-    document.querySelectorAll<HTMLDivElement>('div.notion-page-content div').forEach((el) => {
-      const classList = el.classList
-      if (classList.contains('notion-header-block')) {
-        console.log('push 1', el.textContent)
-        temp.push({ id: el.getAttribute('data-block-id')!, level: 1, textContent: el.innerText })
-      } else if (classList.contains('notion-sub_header-block')) {
-        console.log('push 2', el.textContent)
-        temp.push({ id: el.getAttribute('data-block-id')!, level: 2, textContent: el.innerText })
-      } else if (classList.contains('notion-sub_sub_header-block')) {
-        console.log('push 3', el.textContent)
-        temp.push({ id: el.getAttribute('data-block-id')!, level: 3, textContent: el.innerText })
+
+  const getMutationType = (mutation: MutationRecord) => {}
+
+  const onUpdateContent: MutationCallback = (mutations) => {
+    for (const mutation of mutations) {
+      const isCharacterAddition = mutation.type === 'characterData'
+      const isCharacterDeletion = mutation.type === 'childList'
+      console.log('mutation', mutation)
+      if (isCharacterAddition || isCharacterDeletion) {
+        const headerEl = findParentBlock(mutation.target)
+        if (!headerEl) return
+        if (!isHeaderBlock(headerEl)) return
+
+        const dataBlockId = headerEl?.getAttribute('data-block-id')
+        setHeadingList((prev) =>
+          prev.map((heading) =>
+            heading.id === dataBlockId
+              ? { ...heading, textContent: headerEl?.innerText ?? '' }
+              : heading
+          )
+        )
       }
+    }
+  }
+  useEffect(() => {
+    setHeadingList([])
+    const pageContent = document.querySelector('div.notion-page-content')
+    if (pageContent === null) return
+    pageContent.querySelectorAll<HTMLDivElement>('[data-block-id]').forEach((el) => {
+      const level = getHeaderLevel(el)
+      if (level === null) return
+      setHeadingList((prev) => [
+        ...prev,
+        { id: el.getAttribute('data-block-id')!, level: level, textContent: el.innerText },
+      ])
     })
-    setHeadingList(temp)
+    const observer = new MutationObserver(onUpdateContent)
+    observer.observe(pageContent, { characterData: true, subtree: true, childList: true })
+    return () => observer.disconnect()
   }, [])
   return (
-    <div className="SideBar">
-      <ul css={outlineListCss}>
+    <StyledSideBar>
+      <StyledOutlineHeader>
+        <StyledOutlineHederTitle>Outline</StyledOutlineHederTitle>
+      </StyledOutlineHeader>
+      <StyledOutlineList>
         {headingList.map((heading) => (
-          <li css={outlineListItemCss} key={heading.id}>
-            <button>{heading.textContent}</button>
+          <li key={heading.id}>
+            <StyledOutlineItem
+              css={{
+                paddingLeft: (heading.level - 1) * 12 + 8,
+              }}
+            >
+              {heading.textContent}
+            </StyledOutlineItem>
           </li>
         ))}
-      </ul>
-    </div>
+      </StyledOutlineList>
+    </StyledSideBar>
   )
 }
 
-const outlineListCss = css({
-  listStyle: 'none',
+const StyledSideBar = styled('div', {
+  paddingLeft: 16,
+  minWidth: 260,
+  width: 260,
+  position: 'absolute',
+  top: 0,
+  right: 0,
 })
-const outlineListItemCss = css({
+
+const StyledOutlineHeader = styled('div', {
+  display: 'flex',
+  justifyContent: 'space-between',
+  paddingBottom: 4,
+})
+const StyledOutlineHederTitle = styled('div', { fontWeight: 500, fontSize: 14 })
+
+const StyledOutlineList = styled('ul', {
+  listStyle: 'none',
+  marginBlockStart: 0,
+  marginBlockEnd: 0,
+  paddingInlineStart: 0,
+})
+
+const StyledOutlineItem = styled('button', {
+  backgroundColor: 'transparent',
+  border: 'none',
+  transitionDuration: '300ms',
+  width: '100%',
+  fontSize: '0.875rem',
+  color: 'rgb(120, 119, 116)',
+  padding: '4px 8px',
+  textAlign: 'left',
   '&:hover': {
-    backgroundColor: 'gray',
+    backgroundColor: 'rgb(241, 241, 239)',
   },
 })
