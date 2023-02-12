@@ -1,33 +1,41 @@
 import { useEffect, useState } from 'react'
 import { styled } from '@stitches/react'
-import { getHeaderLevel, HeaderLevel } from './utils/notion'
+import { getHeaderLevel } from './utils/notion'
+import { OutlineList } from './OutlineList'
+import { useOutline } from './atoms/outline'
 
-type Heading = {
-  id: string
-  level: HeaderLevel
-  textContent: string
+const useCurrentTimestamp = (updateInterval: number) => {
+  const [currentTimestamp, setCurrentTimestamp] = useState(new Date().getTime())
+  setInterval(() => setCurrentTimestamp(new Date().getTime()), updateInterval)
+  return {
+    currentTimestamp,
+  }
 }
 
 export const SideBar = () => {
-  const [headingList, setHeadingList] = useState<Heading[]>([])
+  const { outline, setOutline } = useOutline()
 
   const initializeHeadingList = () => {
     const pageContent = document.querySelector('div.notion-page-content')
     if (pageContent === null) return
+    console.log('initializeHeadingList')
 
-    const headingList: Heading[] = Array.from(
+    const headerEls = Array.from(
       pageContent.querySelectorAll<HTMLDivElement>('[data-block-id]')
-    )
-      .filter((el) => getHeaderLevel(el))
-      .map((el) => ({
-        id: el.getAttribute('data-block-id')!,
-        level: getHeaderLevel(el)!,
-        textContent: el.innerText,
-      }))
-    setHeadingList(headingList)
+    ).filter((el) => getHeaderLevel(el))
+    const headingList = headerEls.map((el) => ({
+      blockId: el.getAttribute('data-block-id')!,
+      level: getHeaderLevel(el)!,
+      textContent: el.innerText,
+    }))
+    setOutline(headingList)
   }
 
-  const filteredHeadingList = headingList.filter((heading) => heading.textContent !== '')
+  const onStartTimer = (blockId: string) => {
+    console.log(blockId)
+  }
+
+  const filteredHeadingList = outline.filter((heading) => heading.textContent !== '')
   useEffect(() => {
     initializeHeadingList()
     const pageContent = document.querySelector('div.notion-page-content')
@@ -42,22 +50,7 @@ export const SideBar = () => {
       <StyledOutlineHeader>
         <StyledOutlineHederTitle>Outline</StyledOutlineHederTitle>
       </StyledOutlineHeader>
-      <StyledOutlineList>
-        {filteredHeadingList.map((heading) => (
-          <li key={heading.id}>
-            <StyledOutlineItem
-              onClick={() => {
-                location.hash = '#' + heading.id.replaceAll('-', '')
-              }}
-              css={{
-                paddingLeft: (heading.level - 1) * 12 + 8,
-              }}
-            >
-              {heading.textContent}
-            </StyledOutlineItem>
-          </li>
-        ))}
-      </StyledOutlineList>
+      <OutlineList outlineList={filteredHeadingList} onStartTimer={onStartTimer} />
     </StyledSideBar>
   )
 }
@@ -76,25 +69,8 @@ const StyledOutlineHeader = styled('div', {
   justifyContent: 'space-between',
   paddingBottom: 4,
 })
-const StyledOutlineHederTitle = styled('div', { fontWeight: 500, fontSize: 14 })
-
-const StyledOutlineList = styled('ul', {
-  listStyle: 'none',
-  marginBlockStart: 0,
-  marginBlockEnd: 0,
-  paddingInlineStart: 0,
-})
-
-const StyledOutlineItem = styled('button', {
-  backgroundColor: 'transparent',
-  border: 'none',
-  transitionDuration: '300ms',
-  width: '100%',
-  fontSize: '0.875rem',
-  color: 'rgb(120, 119, 116)',
-  padding: '4px 8px',
-  textAlign: 'left',
-  '&:hover': {
-    backgroundColor: 'rgb(241, 241, 239)',
-  },
+const StyledOutlineHederTitle = styled('div', {
+  fontWeight: 500,
+  fontSize: 14,
+  whiteSpace: 'pre-wrap',
 })
