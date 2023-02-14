@@ -1,16 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { styled } from '@stitches/react'
 import { getHeaderLevel } from './utils/notion'
 import { OutlineList } from './OutlineList'
 import { useOutline } from './atoms/outline'
-
-const useCurrentTimestamp = (updateInterval: number) => {
-  const [currentTimestamp, setCurrentTimestamp] = useState(new Date().getTime())
-  setInterval(() => setCurrentTimestamp(new Date().getTime()), updateInterval)
-  return {
-    currentTimestamp,
-  }
-}
 
 export const SideBar = () => {
   const { outline, setOutline } = useOutline()
@@ -18,7 +10,6 @@ export const SideBar = () => {
   const initializeHeadingList = () => {
     const pageContent = document.querySelector('div.notion-page-content')
     if (pageContent === null) return
-    console.log('initializeHeadingList')
 
     const headerEls = Array.from(
       pageContent.querySelectorAll<HTMLDivElement>('[data-block-id]')
@@ -29,10 +20,6 @@ export const SideBar = () => {
       textContent: el.innerText,
     }))
     setOutline(headingList)
-  }
-
-  const onStartTimer = (blockId: string) => {
-    console.log(blockId)
   }
 
   const filteredHeadingList = outline.filter((heading) => heading.textContent !== '')
@@ -50,7 +37,7 @@ export const SideBar = () => {
       <StyledOutlineHeader>
         <StyledOutlineHederTitle>Outline</StyledOutlineHederTitle>
       </StyledOutlineHeader>
-      <OutlineList outlineList={filteredHeadingList} onStartTimer={onStartTimer} />
+      <OutlineList outlineList={filteredHeadingList} />
     </StyledSideBar>
   )
 }

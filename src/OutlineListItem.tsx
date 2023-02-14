@@ -1,6 +1,7 @@
 import { styled } from '@stitches/react'
 import { useRef, useCallback, useState } from 'react'
 import { useResumableTimers } from './atoms/resumableTimer'
+import { Icon } from './components/ui/icon/Icon'
 import { getMilliseconds } from './utils/datetime'
 import { HeaderLevel } from './utils/notion'
 
@@ -37,11 +38,9 @@ export const OutlineListItem: React.FC<Props> = ({ item }) => {
       [
         {
           backgroundPosition: '100%',
-          backgroundSize: '200% 100%',
         },
         {
           backgroundPosition: '0%',
-          backgroundSize: '200% 100%',
         },
       ],
       {
@@ -65,6 +64,12 @@ export const OutlineListItem: React.FC<Props> = ({ item }) => {
     [item.blockId, pause, progressAnimation]
   )
 
+  const finishProgress = (e: React.MouseEvent) => {
+    e.preventDefault()
+    finish(item.blockId)
+    progressAnimation?.finish()
+  }
+
   return (
     <StyledOutlineListItem key={item.blockId} ref={ref} playing={!!timer}>
       <StyledOutlineItem
@@ -73,34 +78,45 @@ export const OutlineListItem: React.FC<Props> = ({ item }) => {
       >
         {item.textContent}
       </StyledOutlineItem>
-      {duration !== null &&
-        (timer?.state === 'running' ? (
-          <TimerAction onClick={pauseProgress}>pause</TimerAction>
-        ) : (
-          <TimerAction onClick={timer ? resumeProgress : startProgress}>play</TimerAction>
-        ))}
+      {duration !== null && (
+        <StyledOutlineActionContainer>
+          {timer?.state === 'running' ? (
+            <>
+              <Icon icon="pause-circle" color="rgba(203, 145, 47, 1)" onClick={pauseProgress} />
+              <Icon icon="stop-circle" color="rgba(212, 76, 71, 1)" onClick={finishProgress} />
+            </>
+          ) : (
+            <Icon
+              icon="play-circle"
+              color="rgba(68, 131, 97, 1)"
+              onClick={timer ? resumeProgress : startProgress}
+            />
+          )}
+        </StyledOutlineActionContainer>
+      )}
     </StyledOutlineListItem>
   )
 }
 
-const TimerAction = styled('button', {
+const StyledOutlineActionContainer = styled('div', {
   opacity: 0,
-  fontSize: 10,
-  padding: 0,
-  outline: 'none',
-  backgroundColor: 'transparent',
-  border: 'none',
+  display: 'flex',
+  columnGap: 4,
+  transitionDuration: '300ms',
 })
 
 const StyledOutlineListItem = styled('li', {
   display: 'flex',
   justifyContent: 'space-between',
+  alignItems: 'center',
   padding: '4px 8px',
+  borderRadius: 4,
+  cursor: 'pointer',
   position: 'relative',
   '&:hover': {
     backgroundColor: 'rgb(241, 241, 239)',
 
-    [`& ${TimerAction}`]: {
+    [`& ${StyledOutlineActionContainer}`]: {
       opacity: 1,
     },
   },
@@ -109,6 +125,8 @@ const StyledOutlineListItem = styled('li', {
       true: {
         background:
           'linear-gradient(to right, rgb(72, 216, 177) 0 50%, rgb(203, 242, 239) 50% 100%)',
+        backgroundPosition: '0%',
+        backgroundSize: '200% 100%',
       },
     },
   },
@@ -117,7 +135,9 @@ const StyledOutlineListItem = styled('li', {
 const StyledOutlineItem = styled('a', {
   transitionDuration: '300ms',
   textDecoration: 'none',
-  whiteSpace: 'pre',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
   cursor: 'pointer',
   width: '100%',
   fontSize: '0.875rem',

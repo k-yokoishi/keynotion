@@ -3,7 +3,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import './content.css'
 import { SideBar } from './SideBar'
+import { initialize } from './components/ui/icon/Icon'
 
+initialize()
 const frame = document.getElementsByClassName('notion-frame')[0]
 
 if (!frame) {
