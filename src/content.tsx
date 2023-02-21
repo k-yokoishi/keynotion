@@ -4,6 +4,8 @@ import './index.css'
 import './content.css'
 import { SideBar } from './SideBar'
 import { initialize } from './components/ui/icon/Icon'
+import { App } from './App'
+import { MousePointer } from './MousePointer'
 
 initialize()
 const frame = document.getElementsByClassName('notion-frame')[0]
@@ -19,6 +21,9 @@ const root = createRoot(appContainer)
 
 root.render(
   <React.StrictMode>
-    <SideBar />
+    <App>
+      <MousePointer />
+      <SideBar />
+    </App>
   </React.StrictMode>
 )

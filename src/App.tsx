@@ -1,44 +1,40 @@
-import { useState } from 'react'
-import './App.css'
+import { PropsWithChildren, useEffect } from 'react'
+import { useSetOutline } from './atoms/outline'
+import { getMilliseconds } from './utils/datetime'
+import {
+  findParentBlock,
+  getBlockElements,
+  getHeaderLevel,
+  getPageContentElement,
+} from './utils/notion'
 
-function App() {
-  const [count, setCount] = useState(0)
+export const App: React.FC<PropsWithChildren> = ({ children }) => {
+  const setOutline = useSetOutline()
+  const initializeHeadingList = () => {
+    const pageContent = document.querySelector('div.notion-page-content')
+    if (pageContent === null) return
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        {/* <img src={logo} className="App-logo" alt="logo" /> */}
-        <p>Hello Vite + React!!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
+    const headerEls = Array.from(getBlockElements(document) ?? []).filter((el) =>
+      getHeaderLevel(el)
+    )
+    const headingList = headerEls.map((el) => ({
+      blockId: el.getAttribute('data-block-id')!,
+      level: getHeaderLevel(el)!,
+      textContent: el.innerText,
+    }))
+    setOutline(headingList)
+  }
+
+  useEffect(() => {
+    initializeHeadingList()
+
+    const pageContent = getPageContentElement(document)
+    if (pageContent === null) return
+    // TODO: Finely update each heading item
+    const observer = new MutationObserver(initializeHeadingList)
+    observer.observe(pageContent, { characterData: true, subtree: true, childList: true })
+    return () => observer.disconnect()
+  }, [])
+
+  return <>{children}</>
 }
-
-export default App
