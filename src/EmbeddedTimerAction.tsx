@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
-import { findParentBlock, getBlockInfo, getHeaderLevel } from './utils/notion'
+import { useEffect, useState } from 'react'
+import { getBlockInfo, getHeaderLevel } from './utils/notion'
 import { createPortal } from 'react-dom'
 import { styled } from '@stitches/react'
 import { TimerAction } from './TimerAction'
 import { useResumableTimers } from './atoms/resumableTimer'
 import { isElement } from './utils/dom'
+import { getMilliseconds } from './utils/datetime'
 
 type TimerAction = {
   blockId: string
@@ -32,15 +33,14 @@ export const EmbeddedTimerAction: React.FC = () => {
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
-      //
-      const hoveredHeaderBlockEl = document
+      const hoveredHeaderBlockElWithTime = document
         .elementsFromPoint(e.clientX, e.clientY)
-        .find((el) => isElement(el) && getHeaderLevel(el))
+        .find((el) => isElement(el) && getHeaderLevel(el) && getMilliseconds(el.innerText))
 
-      if (hoveredHeaderBlockEl && isElement(hoveredHeaderBlockEl)) {
+      if (hoveredHeaderBlockElWithTime && isElement(hoveredHeaderBlockElWithTime)) {
         setHoveredHeading({
-          el: hoveredHeaderBlockEl,
-          blockId: getBlockInfo(hoveredHeaderBlockEl).id,
+          el: hoveredHeaderBlockElWithTime,
+          blockId: getBlockInfo(hoveredHeaderBlockElWithTime).id,
         })
       } else {
         setHoveredHeading(null)
@@ -87,8 +87,8 @@ const TimerActionContainer = styled('div', {
   zIndex: 100,
   transform: 'translate(-100%, -50%)',
   backgroundColor: 'White',
-  padding: 8,
-  borderRadius: 8,
-  boxShadow: '0 0 8px lightgray',
+  padding: '4px 6px',
+  borderRadius: 3,
+  boxShadow: 'rgb(15 15 15 / 10%) 0px 0px 0px 1px, rgb(15 15 15 / 10%) 0px 2px 4px',
   // opacity: 0.8,
 })
