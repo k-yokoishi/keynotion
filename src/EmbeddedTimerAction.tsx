@@ -11,19 +11,24 @@ type TimerAction = {
   el: Element
 }
 
+type HoveredHeadingPosition = { x: number; y: number } | null
+
 export const EmbeddedTimerAction: React.FC = () => {
   const { timers, start, pause, finish } = useResumableTimers()
   const [hoveredHeading, setHoveredHeading] = useState<TimerAction | null>(null)
+  const [hoveredHeadingPosition, setHoveredHeadingPosition] = useState<HoveredHeadingPosition>(null)
   const timer = timers.find((v) => v.key === hoveredHeading?.blockId)
 
-  const hoveredHeadingPosition = useMemo(() => {
-    if (hoveredHeading === null) return null
+  const updateHoveredHeadingPosition = () => {
+    if (hoveredHeading === null) return
     const { x, y, width, height } = hoveredHeading.el.getBoundingClientRect()
-    return {
+    setHoveredHeadingPosition({
       x: x + width - 16,
       y: y + height / 2,
-    }
-  }, [hoveredHeading])
+    })
+  }
+
+  useEffect(updateHoveredHeadingPosition, [hoveredHeading])
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
@@ -42,7 +47,15 @@ export const EmbeddedTimerAction: React.FC = () => {
       }
     }
     document.addEventListener('mousemove', onMouseMove)
-    return () => document.removeEventListener('mousemove', onMouseMove)
+
+    const onScroll = () => updateHoveredHeadingPosition()
+
+    const scroller = document.querySelector('.notion-frame > .notion-scroller')
+    scroller?.addEventListener('scroll', onScroll)
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove)
+      scroller?.removeEventListener('scroll', onScroll)
+    }
   })
 
   return (

@@ -1,12 +1,6 @@
 import { PropsWithChildren, useEffect } from 'react'
 import { useSetOutline } from './atoms/outline'
-import { getMilliseconds } from './utils/datetime'
-import {
-  findParentBlock,
-  getBlockElements,
-  getHeaderLevel,
-  getPageContentElement,
-} from './utils/notion'
+import { getBlockElements, getHeaderLevel, getPageContentElement } from './utils/notion'
 
 export const App: React.FC<PropsWithChildren> = ({ children }) => {
   const setOutline = useSetOutline()
