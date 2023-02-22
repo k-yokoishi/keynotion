@@ -45,11 +45,11 @@ export const MousePointer: React.FC = () => {
 
 const StyledMousePointer = styled('div', {
   position: 'absolute',
-  zIndex: 100,
-  width: 10,
-  height: 10,
-  boxShadow: '0 0 8px red',
+  zIndex: 999999,
+  width: 8,
+  height: 8,
+  boxShadow: '0 0 8px rgba(212, 76, 71, 1)',
   borderRadius: 5,
-  backgroundColor: 'red',
+  backgroundColor: 'rgba(212, 76, 71, 1)',
   pointerEvents: 'none',
 })

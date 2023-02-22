@@ -1,7 +1,8 @@
 import { styled } from '@stitches/react'
-import { useRef, useCallback, useState } from 'react'
-import { useResumableTimers } from './atoms/resumableTimer'
+import { useRef, useCallback, useState, useEffect } from 'react'
+import { ResumableTimer } from './atoms/resumableTimer'
 import { Icon } from './components/ui/icon/Icon'
+import { TimerAction } from './TimerAction'
 import { getMilliseconds } from './utils/datetime'
 import { HeaderLevel } from './utils/notion'
 
@@ -13,62 +14,62 @@ type OutlineItem = {
 
 type Props = {
   item: OutlineItem
+  timer?: ResumableTimer
+  onStart: (blockId: string) => void
+  onPause: (blockId: string) => void
+  onFinish: (blockId: string) => void
 }
 
-export const OutlineListItem: React.FC<Props> = ({ item }) => {
+export const OutlineListItem: React.FC<Props> = ({ item, timer, onStart, onPause, onFinish }) => {
   const ref = useRef<HTMLLIElement>(null)
 
-  const { timers, start, pause, finish } = useResumableTimers()
-  const timer = timers.find((timer) => timer.key === item.blockId)
   const duration = getMilliseconds(item.textContent)
   const [progressAnimation, setProgressAnimation] = useState<Animation | null>(null)
 
-  const resumeProgress = (e: React.MouseEvent) => {
-    e.preventDefault()
-    start(item.blockId)
-    progressAnimation?.play()
-  }
-
-  const startProgress = (e: React.MouseEvent) => {
-    e.preventDefault()
-
+  const startProgress = useCallback(() => {
     if (ref === null || ref.current === null || duration === null) return
-    start(item.blockId)
-    const animation = ref.current.animate(
-      [
+    if (progressAnimation) {
+      progressAnimation.play()
+    } else {
+      const animation = ref.current.animate(
+        [
+          {
+            backgroundPosition: '100%',
+          },
+          {
+            backgroundPosition: '0%',
+          },
+        ],
         {
-          backgroundPosition: '100%',
-        },
-        {
-          backgroundPosition: '0%',
-        },
-      ],
-      {
-        duration,
-        easing: 'linear',
+          duration,
+          easing: 'linear',
+        }
+      )
+      setProgressAnimation(animation)
+      animation.onfinish = () => {
+        onFinish(item.blockId)
+        setProgressAnimation(null)
       }
-    )
-    setProgressAnimation(animation)
-    animation.onfinish = () => {
-      finish(item.blockId)
-      setProgressAnimation(null)
     }
-  }
+  }, [duration, item.blockId, onFinish, progressAnimation])
 
-  const pauseProgress = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault()
-      pause(item.blockId)
-      progressAnimation?.pause()
-    },
-    [item.blockId, pause, progressAnimation]
-  )
+  const pauseProgress = useCallback(() => {
+    progressAnimation?.pause()
+  }, [progressAnimation])
 
-  const finishProgress = (e: React.MouseEvent) => {
-    e.preventDefault()
-    finish(item.blockId)
+  const finishProgress = useCallback(() => {
     progressAnimation?.finish()
-  }
+  }, [progressAnimation])
+
+  useEffect(() => {
+    if (timer?.state === 'running') {
+      startProgress()
+    } else if (timer?.state === 'paused') {
+      pauseProgress()
+    } else if (timer?.state === 'finished') {
+      finishProgress()
+    }
+  }, [finishProgress, item.blockId, pauseProgress, startProgress, timer?.state])
 
   return (
     <StyledOutlineListItem key={item.blockId} ref={ref} playing={!!timer}>
@@ -78,20 +79,14 @@ export const OutlineListItem: React.FC<Props> = ({ item }) => {
       >
         {item.textContent}
       </StyledOutlineItem>
-      {duration !== null && (
+      {duration && (
         <StyledOutlineActionContainer>
-          {timer?.state === 'running' ? (
-            <>
-              <Icon icon="pause-circle" color="rgba(203, 145, 47, 1)" onClick={pauseProgress} />
-              <Icon icon="stop-circle" color="rgba(212, 76, 71, 1)" onClick={finishProgress} />
-            </>
-          ) : (
-            <Icon
-              icon="play-circle"
-              color="rgba(68, 131, 97, 1)"
-              onClick={timer ? resumeProgress : startProgress}
-            />
-          )}
+          <TimerAction
+            state={timer?.state ?? 'paused'}
+            onStart={() => onStart(item.blockId)}
+            onPause={() => onPause(item.blockId)}
+            onStop={() => onFinish(item.blockId)}
+          />
         </StyledOutlineActionContainer>
       )}
     </StyledOutlineListItem>
@@ -100,8 +95,6 @@ export const OutlineListItem: React.FC<Props> = ({ item }) => {
 
 const StyledOutlineActionContainer = styled('div', {
   opacity: 0,
-  display: 'flex',
-  columnGap: 4,
   transitionDuration: '300ms',
 })
 

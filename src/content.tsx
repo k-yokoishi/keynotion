@@ -5,6 +5,7 @@ import './content.css'
 import { SideBar } from './SideBar'
 import { initialize } from './components/ui/icon/Icon'
 import { App } from './App'
+import { EmbeddedTimerAction } from './EmbeddedTimerAction'
 import { MousePointer } from './MousePointer'
 
 initialize()
@@ -23,6 +24,7 @@ root.render(
   <React.StrictMode>
     <App>
       <MousePointer />
+      <EmbeddedTimerAction />
       <SideBar />
     </App>
   </React.StrictMode>

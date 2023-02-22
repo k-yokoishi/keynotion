@@ -1,4 +1,5 @@
 import { styled } from '@stitches/react'
+import { useResumableTimers } from './atoms/resumableTimer'
 import { OutlineListItem } from './OutlineListItem'
 import { HeaderLevel } from './utils/notion'
 
@@ -13,15 +14,26 @@ type Props = {
 }
 
 export const OutlineList: React.FC<Props> = ({ outlineList }) => {
+  const { timers, start, pause, finish } = useResumableTimers()
   return (
     <StyledSideBar>
       <StyledOutlineHeader>
         <StyledOutlineHederTitle>Outline</StyledOutlineHederTitle>
       </StyledOutlineHeader>
       <StyledOutlineList>
-        {outlineList.map((item) => (
-          <OutlineListItem key={item.blockId} item={item} />
-        ))}
+        {outlineList.map((item) => {
+          const timer = timers.find((v) => v.key === item.blockId)
+          return (
+            <OutlineListItem
+              key={item.blockId}
+              item={item}
+              timer={timer}
+              onStart={start}
+              onPause={pause}
+              onFinish={finish}
+            />
+          )
+        })}
       </StyledOutlineList>
     </StyledSideBar>
   )

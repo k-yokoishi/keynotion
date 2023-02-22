@@ -1,4 +1,4 @@
-import { atom, useAtom } from 'jotai'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 
 export type HeaderLevel = 1 | 2 | 3
 
@@ -12,10 +12,12 @@ const outlineAtom = atom<OutlineItem[]>([])
 
 export const useOutline = () => {
   const [outline, setOutline] = useAtom(outlineAtom)
-  const clear = () => setOutline([])
   return {
     outline,
-    clear,
     setOutline,
   }
 }
+
+export const useOutliveValue = () => useAtomValue(outlineAtom)
+
+export const useSetOutline = () => useSetAtom(outlineAtom)

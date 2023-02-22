@@ -1,9 +1,11 @@
 import { useAtom } from 'jotai'
 import { atomWithImmer } from 'jotai-immer'
 
-type ResumableTimer = {
+export type TimerState = 'running' | 'paused' | 'finished'
+
+export type ResumableTimer = {
   key: string
-  state: 'running' | 'paused'
+  state: TimerState
 }
 
 const timersAtom = atomWithImmer<ResumableTimer[]>([])
@@ -26,6 +28,18 @@ export const useResumableTimers = () => {
         prev.push({ key, state: 'running' })
       }
     })
-  const finish = (key: string) => setTimers((prev) => prev.filter((timer) => timer.key !== key))
-  return { timers, pause, start, finish, setTimers }
+  const finish = (key: string) =>
+    setTimers((prev) => {
+      const timer = prev.find((timer) => timer.key !== key)
+      if (timer) {
+        timer.state = 'finished'
+      }
+    })
+  return {
+    timers: timers.filter((timer) => timer.state !== 'finished'),
+    pause,
+    start,
+    finish,
+    setTimers,
+  }
 }

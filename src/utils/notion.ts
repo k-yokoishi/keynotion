@@ -26,6 +26,10 @@ export const getHeaderLevel = (el: HTMLElement): HeaderLevel | null => {
 
 type NotionMutationType = 'deleteBlock' | 'deleteCharacter' | 'addCharacter'
 type NotionBlockType = 'header' | 'subHeader' | 'subSubHeader' | 'other' // Add block type as needed
+type NotionBlock = {
+  id: string
+  type: NotionBlockType
+}
 type NotionMutation = {
   type: NotionMutationType
   blockId: string
@@ -33,17 +37,32 @@ type NotionMutation = {
   newValue: string
 }
 
+export const getPageContentElement = (doc: Document) => doc.querySelector('div.notion-page-content')
+
+export const getBlockElementById = (blockId: string) => {
+  return document.querySelector(`[data-block-id="${blockId}"]`) ?? null
+}
+
+export const getBlockElements = (doc: Document) => {
+  return getPageContentElement(doc)?.querySelectorAll<HTMLDivElement>('[data-block-id]') ?? null
+}
+
 const getNotionBlockType = (blockEl: HTMLElement): NotionBlockType => {
   if (blockEl.classList.contains(NotionBlockTypeClass.Header)) {
     return 'header'
-  } else if (blockEl.classList.contains(NotionBlockTypeClass.Header)) {
-    return 'subHeader'
   } else if (blockEl.classList.contains(NotionBlockTypeClass.SubHeader)) {
-    return 'subSubHeader'
+    return 'subHeader'
   } else if (blockEl.classList.contains(NotionBlockTypeClass.SubSubHeader)) {
     return 'subSubHeader'
   } else {
     return 'other'
+  }
+}
+
+export const getBlockInfo = (el: HTMLElement): NotionBlock => {
+  return {
+    id: el.getAttribute('data-block-id') ?? '',
+    type: getNotionBlockType(el),
   }
 }
 
