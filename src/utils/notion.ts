@@ -37,6 +37,8 @@ type NotionMutation = {
   newValue: string
 }
 
+export const getNotionAppElement = (doc: Document) => doc.getElementById('notion-app')
+
 export const getPageContentElement = (doc: Document) => doc.querySelector('div.notion-page-content')
 
 export const getBlockElementById = (blockId: string) => {

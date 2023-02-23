@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { styled } from '@stitches/react'
-import { getHeaderLevel } from './utils/notion'
+import { getHeaderLevel, getNotionAppElement } from './utils/notion'
 import { OutlineList } from './OutlineList'
 import { useOutline } from './atoms/outline'
 
@@ -25,13 +25,14 @@ export const SideBar = () => {
   const filteredHeadingList = outline.filter((heading) => heading.textContent !== '')
   useEffect(() => {
     initializeHeadingList()
-    const pageContent = document.querySelector('div.notion-page-content')
-    if (pageContent === null) return
+    const notionApp = getNotionAppElement(document)
+    if (notionApp === null) return
     // TODO: Finely update each heading item
     const observer = new MutationObserver(initializeHeadingList)
-    observer.observe(pageContent, { characterData: true, subtree: true, childList: true })
+    observer.observe(notionApp, { characterData: true, subtree: true, childList: true })
     return () => observer.disconnect()
   }, [])
+
   return (
     <StyledSideBar>
       <StyledOutlineHeader>
