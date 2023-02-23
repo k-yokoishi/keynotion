@@ -1,23 +1,33 @@
 import { isElement } from './dom'
-export const isHeaderBlock = (el: HTMLElement) =>
-  el.classList.contains('notion-header-block') ||
-  el.classList.contains('notion-sub_header-block') ||
-  el.classList.contains('notion-sub_sub_header-block')
 
-const NotionBlockTypeClass = {
+const NotionId = {
+  App: 'notion-app',
+} as const
+
+const NotionClass = {
+  PageContent: 'notion-page-content',
   Header: 'notion-header-block',
   SubHeader: 'notion-sub_header-block',
   SubSubHeader: 'notion-sub_sub_header-block',
   Text: 'notion-text-block',
 } as const
 
+const NotionAttr = {
+  BlockId: 'data-block-id',
+} as const
+
+export const isHeaderBlock = (el: HTMLElement) =>
+  el.classList.contains(NotionClass.Header) ||
+  el.classList.contains(NotionClass.SubHeader) ||
+  el.classList.contains(NotionClass.SubSubHeader)
+
 export type HeaderLevel = 1 | 2 | 3
 export const getHeaderLevel = (el: HTMLElement): HeaderLevel | null => {
-  if (el.classList.contains('notion-header-block')) {
+  if (el.classList.contains(NotionClass.Header)) {
     return 1
-  } else if (el.classList.contains('notion-sub_header-block')) {
+  } else if (el.classList.contains(NotionClass.SubHeader)) {
     return 2
-  } else if (el.classList.contains('notion-sub_sub_header-block')) {
+  } else if (el.classList.contains(NotionClass.SubSubHeader)) {
     return 3
   } else {
     return null
@@ -37,9 +47,9 @@ type NotionMutation = {
   newValue: string
 }
 
-export const getNotionAppElement = (doc: Document) => doc.getElementById('notion-app')
+export const getNotionAppElement = (doc: Document) => doc.getElementById(NotionId.App)
 
-export const getPageContentElement = (doc: Document) => doc.querySelector('div.notion-page-content')
+export const getPageContentElement = (doc: Document) => doc.querySelector(NotionClass.PageContent)
 
 export const getBlockElementById = (blockId: string) => {
   return document.querySelector(`[data-block-id="${blockId}"]`) ?? null
@@ -49,12 +59,19 @@ export const getBlockElements = (doc: Document) => {
   return getPageContentElement(doc)?.querySelectorAll<HTMLDivElement>('[data-block-id]') ?? null
 }
 
+export const getHeaderBlockElements = (doc: Document) =>
+  doc.querySelectorAll<HTMLDivElement>(
+    [NotionClass.Header, NotionClass.SubHeader, NotionClass.SubSubHeader]
+      .map((v) => `.${v}`)
+      .join(',')
+  )
+
 const getNotionBlockType = (blockEl: HTMLElement): NotionBlockType => {
-  if (blockEl.classList.contains(NotionBlockTypeClass.Header)) {
+  if (blockEl.classList.contains(NotionClass.Header)) {
     return 'header'
-  } else if (blockEl.classList.contains(NotionBlockTypeClass.SubHeader)) {
+  } else if (blockEl.classList.contains(NotionClass.SubHeader)) {
     return 'subHeader'
-  } else if (blockEl.classList.contains(NotionBlockTypeClass.SubSubHeader)) {
+  } else if (blockEl.classList.contains(NotionClass.SubSubHeader)) {
     return 'subSubHeader'
   } else {
     return 'other'
