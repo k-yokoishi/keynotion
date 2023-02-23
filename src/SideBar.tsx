@@ -1,6 +1,12 @@
 import { useEffect } from 'react'
 import { styled } from '@stitches/react'
-import { getHeaderLevel, getNotionAppElement } from './utils/notion'
+import {
+  getBlockInfo,
+  getHeaderBlockElements,
+  getHeaderLevel,
+  getNotionAppElement,
+  getPageContentElement,
+} from './utils/notion'
 import { OutlineList } from './OutlineList'
 import { useOutline } from './atoms/outline'
 
@@ -8,15 +14,13 @@ export const SideBar = () => {
   const { outline, setOutline } = useOutline()
 
   const initializeHeadingList = () => {
-    const pageContent = document.querySelector('div.notion-page-content')
+    const pageContent = getPageContentElement(document)
     if (pageContent === null) return
 
-    const headerEls = Array.from(
-      pageContent.querySelectorAll<HTMLDivElement>('[data-block-id]')
-    ).filter((el) => getHeaderLevel(el))
+    const headerEls = Array.from(getHeaderBlockElements(document))
     const headingList = headerEls.map((el) => ({
-      blockId: el.getAttribute('data-block-id')!,
-      level: getHeaderLevel(el)!,
+      blockId: getBlockInfo(el).id,
+      level: getHeaderLevel(el) ?? 1,
       textContent: el.innerText,
     }))
     setOutline(headingList)

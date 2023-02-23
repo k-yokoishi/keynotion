@@ -1,6 +1,12 @@
 import { PropsWithChildren, useEffect } from 'react'
 import { useSetOutline } from './atoms/outline'
-import { getBlockElements, getHeaderLevel, getPageContentElement } from './utils/notion'
+import {
+  getBlockElements,
+  getBlockInfo,
+  getHeaderBlockElements,
+  getHeaderLevel,
+  getPageContentElement,
+} from './utils/notion'
 
 export const App: React.FC<PropsWithChildren> = ({ children }) => {
   const setOutline = useSetOutline()
@@ -8,12 +14,10 @@ export const App: React.FC<PropsWithChildren> = ({ children }) => {
     const pageContent = document.querySelector('div.notion-page-content')
     if (pageContent === null) return
 
-    const headerEls = Array.from(getBlockElements(document) ?? []).filter((el) =>
-      getHeaderLevel(el)
-    )
-    const headingList = headerEls.map((el) => ({
-      blockId: el.getAttribute('data-block-id')!,
-      level: getHeaderLevel(el)!,
+    const headerEls = getHeaderBlockElements(document)
+    const headingList = Array.from(headerEls).map((el) => ({
+      blockId: getBlockInfo(el).id,
+      level: getHeaderLevel(el) ?? 1,
       textContent: el.innerText,
     }))
     setOutline(headingList)
