@@ -5,6 +5,7 @@ const NotionId = {
 } as const
 
 const NotionClass = {
+  Frame: 'notion-frame',
   PageContent: 'notion-page-content',
   Header: 'notion-header-block',
   SubHeader: 'notion-sub_header-block',
@@ -50,6 +51,9 @@ type NotionMutation = {
 export const getNotionAppElement = (doc: Document) => doc.getElementById(NotionId.App)
 
 export const getPageContentElement = (doc: Document) => doc.querySelector(NotionClass.PageContent)
+
+export const getNotionFrameElement = (doc: Document) =>
+  doc.getElementsByClassName(NotionClass.Frame)[0]
 
 export const getBlockElementById = (blockId: string) => {
   return document.querySelector(`[${NotionAttr.BlockId}="${blockId}"]`) ?? null

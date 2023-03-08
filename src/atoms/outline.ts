@@ -18,6 +18,6 @@ export const useOutline = () => {
   }
 }
 
-export const useOutliveValue = () => useAtomValue(outlineAtom)
+export const useOutlineValue = () => useAtomValue(outlineAtom)
 
 export const useSetOutline = () => useSetAtom(outlineAtom)

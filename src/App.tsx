@@ -1,16 +1,15 @@
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, useCallback, useEffect } from 'react'
 import { useSetOutline } from './atoms/outline'
 import {
-  getBlockElements,
   getBlockInfo,
   getHeaderBlockElements,
   getHeaderLevel,
-  getPageContentElement,
+  getNotionAppElement,
 } from './utils/notion'
 
 export const App: React.FC<PropsWithChildren> = ({ children }) => {
   const setOutline = useSetOutline()
-  const initializeHeadingList = () => {
+  const initializeHeadingList = useCallback(() => {
     const pageContent = document.querySelector('div.notion-page-content')
     if (pageContent === null) return
 
@@ -21,18 +20,18 @@ export const App: React.FC<PropsWithChildren> = ({ children }) => {
       textContent: el.innerText,
     }))
     setOutline(headingList)
-  }
+  }, [setOutline])
 
   useEffect(() => {
     initializeHeadingList()
 
-    const pageContent = getPageContentElement(document)
-    if (pageContent === null) return
+    const notionApp = getNotionAppElement(document)
+    if (notionApp === null) return
     // TODO: Finely update each heading item
     const observer = new MutationObserver(initializeHeadingList)
-    observer.observe(pageContent, { characterData: true, subtree: true, childList: true })
+    observer.observe(notionApp, { characterData: true, subtree: true, childList: true })
     return () => observer.disconnect()
-  }, [])
+  }, [initializeHeadingList])
 
   return <>{children}</>
 }

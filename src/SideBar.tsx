@@ -1,45 +1,36 @@
 import { ComponentProps, useEffect, useMemo, useState } from 'react'
 import { styled } from '@stitches/react'
-import {
-  getBlockInfo,
-  getHeaderBlockElements,
-  getHeaderLevel,
-  getNotionAppElement,
-  getPageContentElement,
-} from './utils/notion'
+import { getNotionFrameElement } from './utils/notion'
 import { OutlineList } from './OutlineList'
-import { useOutline } from './atoms/outline'
+import { useOutlineValue } from './atoms/outline'
 import { Icon } from './components/ui/icon/Icon'
 import { useMouseMove } from './hooks/useMouseMove'
+import { createPortal } from 'react-dom'
+import { isElement } from './utils/dom'
+
+const SideBarWidth = '260px'
 
 export const SideBar = () => {
-  const { outline, setOutline } = useOutline()
+  const outline = useOutlineValue()
   const [fixed, setFixed] = useState(true)
-  const [sidebarHovered, setSidebarHovered] = useState(false)
+  const [sidebarHovered, setSideBarHovered] = useState(false)
 
-  const initializeHeadingList = () => {
-    const pageContent = getPageContentElement(document)
-    if (pageContent === null) return
-
-    const headerEls = Array.from(getHeaderBlockElements(document))
-    const headingList = headerEls.map((el) => ({
-      blockId: getBlockInfo(el).id,
-      level: getHeaderLevel(el) ?? 1,
-      textContent: el.innerText,
-    }))
-    setOutline(headingList)
-  }
+  useEffect(() => {
+    const scroller = document.querySelector('.notion-frame .notion-scroller')
+    if (scroller && isElement(scroller)) {
+      const { transitionDuration: originalTransitionDuration, width: originalWidth } =
+        scroller.style
+      scroller.style.transitionDuration = '300ms'
+      scroller.style.width = `calc(100% - ${SideBarWidth})`
+      return () => {
+        scroller.style.transitionDuration = originalTransitionDuration
+        scroller.style.width = originalWidth
+      }
+    }
+    return () => {}
+  }, [])
 
   const filteredHeadingList = outline.filter((heading) => heading.textContent !== '')
-  useEffect(() => {
-    initializeHeadingList()
-    const notionApp = getNotionAppElement(document)
-    if (notionApp === null) return
-    // TODO: Finely update each heading item
-    const observer = new MutationObserver(initializeHeadingList)
-    observer.observe(notionApp, { characterData: true, subtree: true, childList: true })
-    return () => observer.disconnect()
-  }, [])
 
   const { distanceFromRight } = useMouseMove(document.documentElement)
   const state = useMemo<ComponentProps<typeof StyledSideBarContainer>['state']>(() => {
@@ -48,28 +39,52 @@ export const SideBar = () => {
     return sidebarHovered || touchRightOfWindow ? 'floatingOpened' : 'floatingClosed'
   }, [distanceFromRight, fixed, sidebarHovered])
 
+  useEffect(() => {
+    const scroller = document.querySelector('.notion-frame .notion-scroller')
+    if (scroller === null || !isElement(scroller)) return
+    if (state === 'fixed' || state === 'floatingOpened') {
+      scroller.style.width = `calc(100% - ${SideBarWidth})`
+      return
+    } else if (state === 'floatingClosed') {
+      scroller.style.width = '100%'
+    }
+  }, [state])
+
   const handleToggleOpened = () => {
     setFixed((prev) => !prev)
   }
 
+  const rootEl = getNotionFrameElement(document)
+  if (rootEl === null) throw new Error('notion-frame not found')
+
   return (
-    <StyledSideBarContainer
-      state={state}
-      onMouseEnter={() => setSidebarHovered(true)}
-      onMouseLeave={() => setSidebarHovered(false)}
-    >
-      <StyledSideBar>
-        <StyledSidebarHeader>
-          <StyledSidebarTitle>Outline</StyledSidebarTitle>
-          <StyledSideBarAction onClick={handleToggleOpened}>
-            <Icon icon={fixed ? 'chevron-left' : 'thumbtack'} color={'rgba(55, 53, 47, 0.45)'} />
-          </StyledSideBarAction>
-        </StyledSidebarHeader>
-        <StyledSideBarContent>
-          <OutlineList outlineList={filteredHeadingList} />
-        </StyledSideBarContent>
-      </StyledSideBar>
-    </StyledSideBarContainer>
+    <>
+      {createPortal(
+        <StyledSideBarRoot>
+          <StyledSideBarContainer
+            state={state}
+            onMouseEnter={() => setSideBarHovered(true)}
+            onMouseLeave={() => setSideBarHovered(false)}
+          >
+            <StyledSideBar>
+              <StyledSideBarHeader>
+                <StyledSideBarTitle>Outline</StyledSideBarTitle>
+                <StyledSideBarAction onClick={handleToggleOpened}>
+                  <Icon
+                    icon={fixed ? 'chevron-left' : 'thumbtack'}
+                    color={'rgba(55, 53, 47, 0.45)'}
+                  />
+                </StyledSideBarAction>
+              </StyledSideBarHeader>
+              <StyledSideBarContent>
+                <OutlineList outlineList={filteredHeadingList} />
+              </StyledSideBarContent>
+            </StyledSideBar>
+          </StyledSideBarContainer>
+        </StyledSideBarRoot>,
+        rootEl
+      )}
+    </>
   )
 }
 
@@ -90,8 +105,8 @@ const StyledSideBarAction = styled('div', {
 })
 
 const StyledSideBar = styled('section', {
-  minWidth: 260,
-  width: 260,
+  minWidth: SideBarWidth,
+  width: SideBarWidth,
   padding: '4px 14px',
   position: 'absolute',
   top: 0,
@@ -103,7 +118,7 @@ const StyledSideBar = styled('section', {
   },
 })
 
-const StyledSidebarHeader = styled('header', {
+const StyledSideBarHeader = styled('header', {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -111,7 +126,7 @@ const StyledSidebarHeader = styled('header', {
   paddingBottom: 4,
 })
 
-const StyledSidebarTitle = styled('div', {
+const StyledSideBarTitle = styled('div', {
   fontWeight: 500,
   fontSize: 14,
   whiteSpace: 'pre-wrap',
@@ -119,6 +134,11 @@ const StyledSidebarTitle = styled('div', {
 
 const StyledSideBarContent = styled('div', {})
 
+const StyledSideBarRoot = styled('div', {
+  position: 'absolute',
+  top: 0,
+  right: 0,
+})
 const StyledSideBarContainer = styled('div', {
   maxHeight: 'calc(10vh - 120px)',
   position: 'relative',
@@ -141,7 +161,7 @@ const StyledSideBarContainer = styled('div', {
         },
       },
       floatingClosed: {
-        transform: 'translate(260px, 8px)',
+        transform: `translate(${SideBarWidth}, 8px)`,
         opacity: 0,
         [`& ${StyledSideBar}`]: {
           boxShadow:
