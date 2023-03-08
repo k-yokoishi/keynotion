@@ -111,6 +111,8 @@ const StyledSideBar = styled('section', {
   position: 'absolute',
   top: 0,
   right: 0,
+  borderTopLeftRadius: 3,
+  borderBottomLeftRadius: 3,
   '&:hover': {
     [`& ${StyledSideBarAction}`]: {
       opacity: 1,
