@@ -16,10 +16,7 @@ type Props = {
 export const OutlineList: React.FC<Props> = ({ outlineList }) => {
   const { timers, start, pause, finish } = useResumableTimers()
   return (
-    <StyledSideBar>
-      <StyledOutlineHeader>
-        <StyledOutlineHederTitle>Outline</StyledOutlineHederTitle>
-      </StyledOutlineHeader>
+    <StyledOutline>
       <StyledOutlineList>
         {outlineList.map((item) => {
           const timer = timers.find((v) => v.key === item.blockId)
@@ -35,29 +32,11 @@ export const OutlineList: React.FC<Props> = ({ outlineList }) => {
           )
         })}
       </StyledOutlineList>
-    </StyledSideBar>
+    </StyledOutline>
   )
 }
 
-const StyledSideBar = styled('div', {
-  paddingLeft: 16,
-  minWidth: 260,
-  width: 260,
-  position: 'absolute',
-  top: 0,
-  right: 0,
-})
-
-const StyledOutlineHeader = styled('div', {
-  display: 'flex',
-  justifyContent: 'space-between',
-  paddingBottom: 4,
-})
-const StyledOutlineHederTitle = styled('div', {
-  fontWeight: 500,
-  fontSize: 14,
-  whiteSpace: 'pre-wrap',
-})
+const StyledOutline = styled('div', {})
 
 const StyledOutlineList = styled('ul', {
   listStyle: 'none',

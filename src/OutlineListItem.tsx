@@ -138,13 +138,13 @@ const StyledOutlineItem = styled('a', {
   variants: {
     level: {
       1: {
-        paddingLeft: 8,
+        paddingLeft: 0,
       },
       2: {
-        paddingLeft: 8 + 12,
+        paddingLeft: 12,
       },
       3: {
-        paddingLeft: 8 + 20,
+        paddingLeft: 24,
       },
     },
   },
