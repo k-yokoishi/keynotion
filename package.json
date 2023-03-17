@@ -11,6 +11,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.3.0",
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@radix-ui/react-switch": "^1.0.2",
     "@stitches/react": "^1.2.8",
     "immer": "^9.0.19",
     "jotai": "^2.0.1",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.14",
+    "@types/chrome": "^0.0.224",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.51.0",

@@ -1,5 +1,10 @@
-import { PropsWithChildren, useCallback, useEffect } from 'react'
+import { ComponentProps, memo, useCallback, useEffect, useState } from 'react'
 import { useSetOutline } from './atoms/outline'
+import { EmbeddedTimerAction } from './EmbeddedTimerAction'
+import { MousePointer } from './MousePointer'
+import { SettingRepository } from './repositories/settingRepository'
+import { addListenerOnUpdateSetting } from './services/messageService'
+import { SideBar } from './SideBar'
 import {
   getBlockInfo,
   getHeaderBlockElements,
@@ -7,7 +12,7 @@ import {
   getNotionAppElement,
 } from './utils/notion'
 
-export const App: React.FC<PropsWithChildren> = ({ children }) => {
+export const App: React.FC = () => {
   const setOutline = useSetOutline()
   const initializeHeadingList = useCallback(() => {
     const pageContent = document.querySelector('div.notion-page-content')
@@ -33,5 +38,26 @@ export const App: React.FC<PropsWithChildren> = ({ children }) => {
     return () => observer.disconnect()
   }, [initializeHeadingList])
 
-  return <>{children}</>
+  addListenerOnUpdateSetting((setting) => {
+    setLasersPointerEnabled(setting.laserPointerEnabled)
+  })
+  const [laserPointerEnabled, setLasersPointerEnabled] = useState(false)
+
+  useEffect(() => {
+    new SettingRepository().getLaserPointerEnabled().then(setLasersPointerEnabled)
+  }, [])
+
+  const MousePointerMemo = memo(function MousePointerMemo({
+    enabled,
+  }: ComponentProps<typeof MousePointer>) {
+    return <MousePointer enabled={enabled} />
+  })
+
+  return (
+    <>
+      <MousePointerMemo enabled={laserPointerEnabled} />
+      <EmbeddedTimerAction />
+      <SideBar />
+    </>
+  )
 }
