@@ -1,7 +1,7 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { globalCss, styled } from '@stitches/react'
-import { isElement } from './utils/dom'
+import throttle from 'lodash/throttle'
 
 type Props = { enabled: boolean }
 
@@ -19,9 +19,9 @@ export const MousePointer: React.FC<Props> = ({ enabled }) => {
   )
 
   useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => {
+    const onMouseMove = throttle((e: MouseEvent) => {
       setPointerPosition({ x: e.clientX, y: e.clientY })
-    }
+    }, 1000 / 60 /* 60fps */)
     const body = document.body
     body.addEventListener('mousemove', onMouseMove)
     if (enabled && !body.classList.contains(hideCursorClass)) {
@@ -45,6 +45,7 @@ export const MousePointer: React.FC<Props> = ({ enabled }) => {
         body.classList.remove(hideCursorClass)
       }
       body.removeEventListener('click', onClick)
+      body.removeEventListener('mousemove', onMouseMove)
     }
   })
 
@@ -97,14 +98,16 @@ export const MousePointer: React.FC<Props> = ({ enabled }) => {
   )
 }
 
+const LaserPointerColor = 'rgba(212, 76, 71, 1)'
+
 const StyledMousePointer = styled('div', {
   position: 'absolute',
   zIndex: 999999,
   width: 8,
   height: 8,
-  boxShadow: '0 0 8px rgba(212, 76, 71, 1)',
+  boxShadow: `0 0 8px ${LaserPointerColor}`,
   borderRadius: 5,
-  backgroundColor: 'rgba(212, 76, 71, 1)',
+  backgroundColor: LaserPointerColor,
   pointerEvents: 'none',
 })
 
@@ -114,8 +117,8 @@ const StyledRipple = styled('div', {
   width: 10,
   height: 10,
   transform: 'translate(-50%, -50%) scale(0)',
-  boxShadow: '0 0 8px rgba(212, 76, 71, 1)',
-  backgroundColor: 'rgba(212, 76, 71, 1)',
+  boxShadow: `0 0 8px ${LaserPointerColor}`,
+  backgroundColor: LaserPointerColor,
   borderRadius: 999,
   pointerEvents: 'none',
   transitionDuration: '800ms',
