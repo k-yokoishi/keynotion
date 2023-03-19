@@ -23,7 +23,7 @@ export const MousePointer: React.FC<Props> = ({ enabled }) => {
       setPointerPosition({ x: e.clientX, y: e.clientY })
     }, 1000 / 60 /* 60fps */)
     const body = document.body
-    body.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mousemove', onMouseMove)
     if (enabled && !body.classList.contains(hideCursorClass)) {
       body.classList.add(hideCursorClass)
     }
@@ -39,13 +39,13 @@ export const MousePointer: React.FC<Props> = ({ enabled }) => {
         }, 800)
       })
     }
-    body.addEventListener('click', onClick)
+    window.addEventListener('click', onClick)
     return () => {
       if (body.classList.contains(hideCursorClass)) {
         body.classList.remove(hideCursorClass)
       }
-      body.removeEventListener('click', onClick)
-      body.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('click', onClick)
+      window.removeEventListener('mousemove', onMouseMove)
     }
   })
 
@@ -69,9 +69,12 @@ export const MousePointer: React.FC<Props> = ({ enabled }) => {
     }
   }, [enabled])
 
+  const keynotionRoot = document.getElementById('kn-root')
+
   return (
     <>
       {enabled &&
+        keynotionRoot !== null &&
         pointerPosition &&
         createPortal(
           <>
@@ -92,7 +95,7 @@ export const MousePointer: React.FC<Props> = ({ enabled }) => {
               />
             ))}
           </>,
-          document.body
+          keynotionRoot
         )}
     </>
   )
