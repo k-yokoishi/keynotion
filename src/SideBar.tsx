@@ -1,5 +1,5 @@
 import { ComponentProps, useEffect, useMemo, useState } from 'react'
-import { getNotionFrameElement } from './utils/notion'
+import { getNotionFrameElement, getTopbarElement } from './utils/notion'
 import { OutlineList } from './OutlineList'
 import { useOutlineValue } from './atoms/outline'
 import { Icon } from './components/ui/icon/Icon'
@@ -29,7 +29,6 @@ export const SideBar = () => {
         scroller.style.width = originalWidth
       }
     }
-    return () => {}
   }, [])
 
   const filteredHeadingList = outline.filter((heading) => heading.textContent !== '')
@@ -69,18 +68,20 @@ export const SideBar = () => {
             onMouseLeave={() => setSideBarHovered(false)}
           >
             <StyledSideBar>
-              <StyledSideBarHeader>
-                <StyledSideBarTitle>{title}</StyledSideBarTitle>
-                <StyledSideBarAction onClick={handleToggleOpened}>
-                  <Icon
-                    icon={fixed ? 'chevron-left' : 'thumbtack'}
-                    color={'rgba(55, 53, 47, 0.45)'}
-                  />
-                </StyledSideBarAction>
-              </StyledSideBarHeader>
-              <StyledSideBarContent>
-                <OutlineList outlineList={filteredHeadingList} />
-              </StyledSideBarContent>
+              <StyledSideBarInner>
+                <StyledSideBarHeader>
+                  <StyledSideBarTitle>{title}</StyledSideBarTitle>
+                  <StyledSideBarAction onClick={handleToggleOpened}>
+                    <Icon
+                      icon={fixed ? 'chevron-left' : 'thumbtack'}
+                      color={'rgba(55, 53, 47, 0.45)'}
+                    />
+                  </StyledSideBarAction>
+                </StyledSideBarHeader>
+                <StyledSideBarContent>
+                  <OutlineList outlineList={filteredHeadingList} />
+                </StyledSideBarContent>
+              </StyledSideBarInner>
             </StyledSideBar>
           </StyledSideBarContainer>
         </StyledSideBarRoot>,
@@ -113,6 +114,8 @@ const StyledSideBar = styled('section', {
   position: 'absolute',
   top: 0,
   right: 0,
+  height: 'calc(100vh - 45px)',
+  overflow: 'hidden',
   borderTopLeftRadius: '$base',
   borderBottomLeftRadius: '$base',
   '&:hover': {
@@ -120,6 +123,12 @@ const StyledSideBar = styled('section', {
       opacity: 1,
     },
   },
+})
+
+const StyledSideBarInner = styled('div', {
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
 })
 
 const StyledSideBarHeader = styled('header', {
@@ -136,7 +145,10 @@ const StyledSideBarTitle = styled('div', {
   whiteSpace: 'pre-wrap',
 })
 
-const StyledSideBarContent = styled('div', {})
+const StyledSideBarContent = styled('div', {
+  overflow: 'scroll',
+  flex: 1,
+})
 
 const StyledSideBarRoot = styled('div', {
   position: 'absolute',
@@ -160,16 +172,16 @@ const StyledSideBarContainer = styled('div', {
         transform: 'translate(0, 8px)',
         opacity: 1,
         [`& ${StyledSideBar}`]: {
-          boxShadow:
-            'rgb(15 15 15 / 5%) 0px 0px 0px 1px, rgb(15 15 15 / 10%) 0px 3px 6px, rgb(15 15 15 / 20%) 0px 9px 24px',
+          boxShadow: '$deep',
+          height: 'calc(100vh - 45px - 16px)',
         },
       },
       floatingClosed: {
         transform: `translate(${SideBarWidth}, 8px)`,
         opacity: 0,
         [`& ${StyledSideBar}`]: {
-          boxShadow:
-            'rgb(15 15 15 / 5%) 0px 0px 0px 1px, rgb(15 15 15 / 10%) 0px 3px 6px, rgb(15 15 15 / 20%) 0px 9px 24px',
+          boxShadow: '$deep',
+          height: 'calc(100vh - 45px - 16px)',
         },
       },
     },

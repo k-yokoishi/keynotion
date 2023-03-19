@@ -52,6 +52,8 @@ export const getNotionAppElement = (doc: Document) => doc.getElementById(NotionI
 
 export const getPageContentElement = (doc: Document) => doc.querySelector(NotionClass.PageContent)
 
+export const getTopbarElement = (doc: Document) => doc.querySelector('.notion-topbar')
+
 export const getNotionFrameElement = (doc: Document) =>
   doc.getElementsByClassName(NotionClass.Frame)[0]
 
