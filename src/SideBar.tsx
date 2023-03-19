@@ -7,6 +7,7 @@ import { Icon } from './components/ui/icon/Icon'
 import { useMouseMove } from './hooks/useMouseMove'
 import { createPortal } from 'react-dom'
 import { isElement } from './utils/dom'
+import { useTitleValue } from './atoms/title'
 
 const SideBarWidth = '260px'
 
@@ -14,6 +15,7 @@ export const SideBar = () => {
   const outline = useOutlineValue()
   const [fixed, setFixed] = useState(true)
   const [sidebarHovered, setSideBarHovered] = useState(false)
+  const { title } = useTitleValue()
 
   useEffect(() => {
     const scroller = document.querySelector('.notion-frame .notion-scroller')
@@ -68,7 +70,7 @@ export const SideBar = () => {
           >
             <StyledSideBar>
               <StyledSideBarHeader>
-                <StyledSideBarTitle>Outline</StyledSideBarTitle>
+                <StyledSideBarTitle>{title}</StyledSideBarTitle>
                 <StyledSideBarAction onClick={handleToggleOpened}>
                   <Icon
                     icon={fixed ? 'chevron-left' : 'thumbtack'}

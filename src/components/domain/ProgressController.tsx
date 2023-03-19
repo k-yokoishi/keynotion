@@ -11,7 +11,7 @@ import './ProgressController.css'
 export const ProgressController: FC = () => {
   const outlineList = useOutlineValue()
 
-  const { timers, remove, finish } = useResumableTimers()
+  const { timers, finish } = useResumableTimers()
 
   const rootEl = getNotionFrameElement(document)
   if (rootEl === null) throw new Error('notion-frame not found')
