@@ -7,8 +7,8 @@ import {
   faThumbTack,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome'
-import { styled } from '@stitches/react'
 import React from 'react'
+import { styled } from '../../../styles/theme'
 
 export const initialize = () => {
   library.add(faPlayCircle, faPauseCircle, faStopCircle, faChevronLeft, faThumbTack)

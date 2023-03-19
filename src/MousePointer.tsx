@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { globalCss, styled } from '@stitches/react'
 import throttle from 'lodash/throttle'
+import { styled } from './styles/theme'
+import { globalCss } from '@stitches/react'
 
 type Props = { enabled: boolean }
 

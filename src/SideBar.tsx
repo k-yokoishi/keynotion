@@ -1,5 +1,4 @@
 import { ComponentProps, useEffect, useMemo, useState } from 'react'
-import { styled } from '@stitches/react'
 import { getNotionFrameElement } from './utils/notion'
 import { OutlineList } from './OutlineList'
 import { useOutlineValue } from './atoms/outline'
@@ -8,6 +7,7 @@ import { useMouseMove } from './hooks/useMouseMove'
 import { createPortal } from 'react-dom'
 import { isElement } from './utils/dom'
 import { useTitleValue } from './atoms/title'
+import { styled } from './styles/theme'
 
 const SideBarWidth = '260px'
 
@@ -95,7 +95,7 @@ const StyledSideBarAction = styled('div', {
   width: 24,
   height: 24,
   display: 'inline-flex',
-  borderRadius: 3,
+  borderRadius: '$base',
   opacity: 0,
   userSelect: 'none',
   alignItems: 'center',
@@ -113,8 +113,8 @@ const StyledSideBar = styled('section', {
   position: 'absolute',
   top: 0,
   right: 0,
-  borderTopLeftRadius: 3,
-  borderBottomLeftRadius: 3,
+  borderTopLeftRadius: '$base',
+  borderBottomLeftRadius: '$base',
   '&:hover': {
     [`& ${StyledSideBarAction}`]: {
       opacity: 1,
@@ -146,8 +146,8 @@ const StyledSideBarRoot = styled('div', {
 const StyledSideBarContainer = styled('div', {
   maxHeight: 'calc(10vh - 120px)',
   position: 'relative',
-  borderTopLeftRadius: 3,
-  borderBottomLeftRadius: 3,
+  borderTopLeftRadius: '$base',
+  borderBottomLeftRadius: '$base',
   transitionDuration: '300ms',
   paddingLeft: 32,
   variants: {

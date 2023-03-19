@@ -1,6 +1,5 @@
-import { styled } from '@stitches/react'
-import { useRef, useCallback, useState, useEffect } from 'react'
 import { ResumableTimer } from './atoms/resumableTimer'
+import { styled } from './styles/theme'
 import { TimerAction } from './TimerAction'
 import { getMilliseconds } from './utils/datetime'
 import { HeaderLevel } from './utils/notion'

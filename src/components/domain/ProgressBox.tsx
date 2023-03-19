@@ -1,9 +1,9 @@
-import { styled } from '@stitches/react'
 import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import * as RadixProgress from '@radix-ui/react-progress'
 import { ResumableTimer } from '../../atoms/resumableTimer'
 import { getMilliseconds } from '../../utils/datetime'
 import { TimerAction } from '../../TimerAction'
+import { styled } from '../../styles/theme'
 
 type OutlineItem = {
   blockId: string
@@ -114,19 +114,18 @@ const StyledTimerActionWrapper = styled('div', {
   right: 10,
   backgroundColor: 'White',
   padding: '4px 6px',
-  borderRadius: 3,
-  boxShadow: 'rgb(15 15 15 / 10%) 0px 0px 0px 1px, rgb(15 15 15 / 10%) 0px 2px 4px',
+  borderRadius: '$base',
+  boxShadow: '$shallow',
   transitionDuration: '300ms',
 })
 
 const StyledProgressBox = styled('div', {
   position: 'relative',
   padding: 8,
-  borderRadius: 3,
+  borderRadius: '$base',
   backgroundColor: 'White',
   width: 200,
-  boxShadow:
-    'rgb(15 15 15 / 5%) 0px 0px 0px 1px, rgb(15 15 15 / 10%) 0px 3px 6px, rgb(15 15 15 / 20%) 0px 9px 24px',
+  boxShadow: '$deep',
   '&:hover': {
     [`${StyledTimerActionWrapper}`]: {
       opacity: 1,
@@ -136,6 +135,8 @@ const StyledProgressBox = styled('div', {
 
 const StyledProgressBoxTitle = styled('div', {
   fontSize: 14,
+  fontFamily: '$default',
+  color: '$black',
   marginBottom: 8,
   overflow: 'hidden',
   display: '-webkit-box',
@@ -146,7 +147,7 @@ const StyledProgressBoxTitle = styled('div', {
 const StyledProgressRoot = styled(RadixProgress.Root, {
   overflow: 'hidden',
   height: 10,
-  borderRadius: 3,
+  borderRadius: '$base',
   backgroundColor: 'rgb(241, 241, 239)',
 })
 

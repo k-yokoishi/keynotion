@@ -1,6 +1,6 @@
-import { styled } from '@stitches/react'
 import { FC } from 'react'
 import * as RadixSwitch from '@radix-ui/react-switch'
+import { styled } from '../../../styles/theme'
 
 type Props = {
   checked: boolean

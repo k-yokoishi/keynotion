@@ -1,6 +1,6 @@
-import { styled } from '@stitches/react'
 import { useResumableTimers } from './atoms/resumableTimer'
 import { OutlineListItem } from './OutlineListItem'
+import { styled } from './styles/theme'
 import { HeaderLevel } from './utils/notion'
 
 type OutlineItem = {

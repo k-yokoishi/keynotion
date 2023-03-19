@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { getBlockInfo, getHeaderLevel } from './utils/notion'
 import { createPortal } from 'react-dom'
-import { styled } from '@stitches/react'
 import { TimerAction } from './TimerAction'
 import { useResumableTimers } from './atoms/resumableTimer'
 import { isElement } from './utils/dom'
 import { getMilliseconds } from './utils/datetime'
+import { styled } from './styles/theme'
 
 type TimerAction = {
   blockId: string
@@ -88,6 +88,6 @@ const TimerActionContainer = styled('div', {
   transform: 'translate(-100%, -50%)',
   backgroundColor: 'White',
   padding: '4px 6px',
-  borderRadius: 3,
-  boxShadow: 'rgb(15 15 15 / 10%) 0px 0px 0px 1px, rgb(15 15 15 / 10%) 0px 2px 4px',
+  borderRadius: '$base',
+  boxShadow: '$shallow',
 })

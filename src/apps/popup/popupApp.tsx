@@ -1,9 +1,9 @@
-import { styled } from '@stitches/react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Switch } from '../../components/ui/switch.tsx/switch'
 import { SettingRepository } from '../../repositories/settingRepository'
 import { sendMessageToCurrentTab } from '../../services/messageService'
 import { globalStyles } from '../../styles/global'
+import { styled } from '../../styles/theme'
 export const PopupApp = () => {
   const [laserPointerEnabled, setLaserPointerEnabled] = useState(false)
 

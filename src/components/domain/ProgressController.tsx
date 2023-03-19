@@ -1,9 +1,9 @@
-import { styled } from '@stitches/react'
 import { createRef, FC } from 'react'
 import { createPortal } from 'react-dom'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { useOutlineValue } from '../../atoms/outline'
 import { useResumableTimers } from '../../atoms/resumableTimer'
+import { styled } from '../../styles/theme'
 import { getNotionFrameElement } from '../../utils/notion'
 import { ProgressBox } from './ProgressBox'
 import './ProgressController.css'
@@ -40,7 +40,7 @@ export const ProgressController: FC = () => {
             })}
           </StyledTransitionGroup>
         </StyledProgressBoxRoot>,
-        rootEl
+        document.body
       )}
     </>
   )
