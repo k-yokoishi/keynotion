@@ -1,5 +1,6 @@
 import { ComponentProps, memo, useCallback, useEffect, useState } from 'react'
 import { useSetOutline } from './atoms/outline'
+import { ProgressController } from './components/domain/ProgressController'
 import { EmbeddedTimerAction } from './EmbeddedTimerAction'
 import { MousePointer } from './MousePointer'
 import { SettingRepository } from './repositories/settingRepository'
@@ -58,6 +59,7 @@ export const App: React.FC = () => {
       <MousePointerMemo enabled={laserPointerEnabled} />
       <EmbeddedTimerAction />
       <SideBar />
+      <ProgressController />
     </>
   )
 }

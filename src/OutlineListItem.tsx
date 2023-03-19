@@ -20,58 +20,10 @@ type Props = {
 }
 
 export const OutlineListItem: React.FC<Props> = ({ item, timer, onStart, onPause, onFinish }) => {
-  const ref = useRef<HTMLLIElement>(null)
-
   const duration = getMilliseconds(item.textContent)
-  const [progressAnimation, setProgressAnimation] = useState<Animation | null>(null)
-
-  const startProgress = useCallback(() => {
-    if (ref === null || ref.current === null || duration === null) return
-    if (progressAnimation) {
-      progressAnimation.play()
-    } else {
-      const animation = ref.current.animate(
-        [
-          {
-            backgroundPosition: '100%',
-          },
-          {
-            backgroundPosition: '0%',
-          },
-        ],
-        {
-          duration,
-          easing: 'linear',
-        }
-      )
-      setProgressAnimation(animation)
-      animation.onfinish = () => {
-        onFinish(item.blockId)
-        setProgressAnimation(null)
-      }
-    }
-  }, [duration, item.blockId, onFinish, progressAnimation])
-
-  const pauseProgress = useCallback(() => {
-    progressAnimation?.pause()
-  }, [progressAnimation])
-
-  const finishProgress = useCallback(() => {
-    progressAnimation?.finish()
-  }, [progressAnimation])
-
-  useEffect(() => {
-    if (timer?.state === 'running') {
-      startProgress()
-    } else if (timer?.state === 'paused') {
-      pauseProgress()
-    } else if (timer?.state === 'finished') {
-      finishProgress()
-    }
-  }, [finishProgress, item.blockId, pauseProgress, startProgress, timer?.state])
 
   return (
-    <StyledOutlineListItem key={item.blockId} ref={ref} playing={!!timer}>
+    <StyledOutlineListItem key={item.blockId}>
       <StyledOutlineItem
         href={`${location.pathname}#${item.blockId.replaceAll('-', '')}`}
         level={item.level}
@@ -110,16 +62,6 @@ const StyledOutlineListItem = styled('li', {
 
     [`& ${StyledOutlineActionContainer}`]: {
       opacity: 1,
-    },
-  },
-  variants: {
-    playing: {
-      true: {
-        background:
-          'linear-gradient(to right, rgb(72, 216, 177) 0 50%, rgb(203, 242, 239) 50% 100%)',
-        backgroundPosition: '0%',
-        backgroundSize: '200% 100%',
-      },
     },
   },
 })

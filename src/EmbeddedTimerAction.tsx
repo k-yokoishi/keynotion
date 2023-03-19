@@ -90,5 +90,4 @@ const TimerActionContainer = styled('div', {
   padding: '4px 6px',
   borderRadius: 3,
   boxShadow: 'rgb(15 15 15 / 10%) 0px 0px 0px 1px, rgb(15 15 15 / 10%) 0px 2px 4px',
-  // opacity: 0.8,
 })

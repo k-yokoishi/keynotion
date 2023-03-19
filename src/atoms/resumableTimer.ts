@@ -13,13 +13,11 @@ const timersAtom = atomWithImmer<ResumableTimer[]>([])
 export const useResumableTimers = () => {
   const [timers, setTimers] = useAtom(timersAtom)
   const pause = (key: string) =>
-    setTimers((prev) => {
-      const timer = prev.find((v) => v.key === key)
-      if (timer) {
-        timer.state = 'paused'
-      }
-    })
-  const start = (key: string) =>
+    setTimers((prev) =>
+      prev.map((timer) => ({ ...timer, state: timer.key === key ? 'paused' : timer.state }))
+    )
+  const start = (key: string) => {
+    console.log('start', key)
     setTimers((prev) => {
       const timer = prev.find((v) => v.key === key)
       if (timer) {
@@ -28,13 +26,13 @@ export const useResumableTimers = () => {
         prev.push({ key, state: 'running' })
       }
     })
-  const finish = (key: string) =>
-    setTimers((prev) => {
-      const timer = prev.find((timer) => timer.key !== key)
-      if (timer) {
-        timer.state = 'finished'
-      }
-    })
+  }
+
+  const finish = (key: string) => {
+    setTimers((prev) =>
+      prev.map((timer) => ({ ...timer, state: timer.key === key ? 'finished' : timer.state }))
+    )
+  }
   return {
     timers: timers.filter((timer) => timer.state !== 'finished'),
     pause,
