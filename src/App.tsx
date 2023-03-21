@@ -23,8 +23,7 @@ export const App: React.FC = () => {
     const pageContent = document.querySelector('div.notion-page-content')
     if (pageContent === null) return
 
-    const headerEls = getHeaderBlockElements(document)
-    const headingList = Array.from(headerEls).map((el) => ({
+    const headingList = getHeaderBlockElements(document).map((el) => ({
       blockId: getBlockInfo(el).id,
       level: getHeaderLevel(el) ?? 1,
       textContent: el.innerText,

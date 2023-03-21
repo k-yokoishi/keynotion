@@ -49,8 +49,8 @@ export const ProgressController: FC = () => {
 const StyledProgressBoxRoot = styled('div', {
   position: 'absolute',
   zIndex: 999999,
-  bottom: 24,
-  right: 24,
+  bottom: 16,
+  right: 16,
 })
 
 const StyledTransitionGroup = styled(TransitionGroup, {

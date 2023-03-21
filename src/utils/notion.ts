@@ -68,11 +68,17 @@ export const getBlockElements = (doc: Document) => {
 }
 
 export const getHeaderBlockElements = (doc: Document) =>
-  doc.querySelectorAll<HTMLDivElement>(
-    [NotionClass.Header, NotionClass.SubHeader, NotionClass.SubSubHeader]
-      .map((v) => `.${v}`)
-      .join(',')
-  )
+  Array.from(
+    doc.querySelectorAll<HTMLDivElement>(
+      [NotionClass.Header, NotionClass.SubHeader, NotionClass.SubSubHeader]
+        .map((v) => `.${v}`)
+        .join(',')
+    )
+  ).filter((el) => {
+    // Exclude button that appears aside header
+    const hasPlaceholder = !!el.querySelector('[placeholder]')
+    return hasPlaceholder
+  })
 
 const getNotionBlockType = (blockEl: HTMLElement): NotionBlockType => {
   if (blockEl.classList.contains(NotionClass.Header)) {

@@ -17,7 +17,6 @@ export const useResumableTimers = () => {
       prev.map((timer) => ({ ...timer, state: timer.key === key ? 'paused' : timer.state }))
     )
   const start = (key: string) => {
-    console.log('start', key)
     setTimers((prev) => {
       const timer = prev.find((v) => v.key === key)
       if (timer) {

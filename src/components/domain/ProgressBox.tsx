@@ -77,7 +77,6 @@ export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
   }, [progressAnimation])
 
   useEffect(() => {
-    console.log('timer?.state', timer?.state)
     if (timer?.state === 'running') {
       startProgress()
     } else if (timer?.state === 'paused') {
