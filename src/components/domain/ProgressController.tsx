@@ -19,7 +19,7 @@ export const ProgressController: FC = () => {
     <>
       {createPortal(
         <StyledProgressBoxRoot>
-          <StyledTransitionGroup component="li">
+          <StyledTransitionGroup component="ul">
             {timers.reverse().map((timer) => {
               const item = outlineList.find((v) => v.blockId === timer.key)
               const nodeRef = createRef<HTMLLIElement>()
