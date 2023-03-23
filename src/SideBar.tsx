@@ -1,13 +1,13 @@
 import { ComponentProps, useEffect, useMemo, useState } from 'react'
-import { getNotionFrameElement, getTopbarElement } from './utils/notion'
+import { getNotionFrameElement } from './utils/notion'
 import { OutlineList } from './OutlineList'
 import { useOutlineValue } from './atoms/outline'
 import { Icon } from './components/ui/icon/Icon'
 import { useMouseMove } from './hooks/useMouseMove'
 import { createPortal } from 'react-dom'
 import { isElement } from './utils/dom'
-import { useTitleValue } from './atoms/title'
 import { styled } from './styles/theme'
+import { useDocument } from './hooks/useDocument'
 
 const SideBarWidth = '260px'
 
@@ -15,7 +15,13 @@ export const SideBar = () => {
   const outline = useOutlineValue()
   const [fixed, setFixed] = useState(true)
   const [sidebarHovered, setSideBarHovered] = useState(false)
-  const { title } = useTitleValue()
+  const { title, pathname } = useDocument(document)
+  const { distanceFromRight } = useMouseMove(document.documentElement)
+  const state = useMemo<ComponentProps<typeof StyledSideBarContainer>['state']>(() => {
+    if (fixed) return 'fixed'
+    const touchRightOfWindow = distanceFromRight <= 32
+    return sidebarHovered || touchRightOfWindow ? 'floatingOpened' : 'floatingClosed'
+  }, [distanceFromRight, fixed, sidebarHovered])
 
   useEffect(() => {
     const scroller = document.querySelector('.notion-frame .notion-scroller')
@@ -29,16 +35,7 @@ export const SideBar = () => {
         scroller.style.width = originalWidth
       }
     }
-  }, [])
-
-  const filteredHeadingList = outline.filter((heading) => heading.textContent !== '')
-
-  const { distanceFromRight } = useMouseMove(document.documentElement)
-  const state = useMemo<ComponentProps<typeof StyledSideBarContainer>['state']>(() => {
-    if (fixed) return 'fixed'
-    const touchRightOfWindow = distanceFromRight <= 32
-    return sidebarHovered || touchRightOfWindow ? 'floatingOpened' : 'floatingClosed'
-  }, [distanceFromRight, fixed, sidebarHovered])
+  }, [pathname])
 
   useEffect(() => {
     const scroller = document.querySelector('.notion-frame .notion-scroller')
@@ -49,7 +46,9 @@ export const SideBar = () => {
     } else if (state === 'floatingClosed') {
       scroller.style.width = '100%'
     }
-  }, [state])
+  }, [pathname, state])
+
+  const filteredHeadingList = outline.filter((heading) => heading.textContent !== '')
 
   const handleToggleOpened = () => {
     setFixed((prev) => !prev)
@@ -95,6 +94,7 @@ const StyledSideBarAction = styled('div', {
   cursor: 'pointer',
   width: 24,
   height: 24,
+  flexShrink: 0,
   display: 'inline-flex',
   borderRadius: '$base',
   opacity: 0,
@@ -142,7 +142,11 @@ const StyledSideBarHeader = styled('header', {
 const StyledSideBarTitle = styled('div', {
   fontWeight: 500,
   fontSize: 14,
-  whiteSpace: 'pre-wrap',
+  // whiteSpace: 'pre-wrap',
+  overflow: 'hidden',
+  display: '-webkit-box',
+  '-webkit-line-clamp': 2,
+  '-webkit-box-orient': 'vertical',
 })
 
 const StyledSideBarContent = styled('div', {

@@ -102,12 +102,11 @@ export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
 const StyledTimerActionWrapper = styled('div', {
   position: 'absolute',
   opacity: 0,
-  top: 8,
-  right: 10,
+  top: 6,
+  right: 6,
   backgroundColor: 'White',
   padding: '4px 6px',
   borderRadius: '$base',
-  boxShadow: '$shallow',
   transitionDuration: '300ms',
 })
 

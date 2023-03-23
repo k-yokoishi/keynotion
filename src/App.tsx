@@ -1,6 +1,5 @@
 import { ComponentProps, memo, useCallback, useEffect, useState } from 'react'
 import { useSetOutline } from './atoms/outline'
-import { useSetTitle } from './atoms/title'
 import { ProgressController } from './components/domain/ProgressController'
 import { EmbeddedTimerAction } from './EmbeddedTimerAction'
 import { MousePointer } from './MousePointer'
@@ -16,10 +15,7 @@ import {
 
 export const App: React.FC = () => {
   const setOutline = useSetOutline()
-  const setTitle = useSetTitle()
   const updateOutlineValues = useCallback(() => {
-    setTitle({ title: document.title })
-
     const pageContent = document.querySelector('div.notion-page-content')
     if (pageContent === null) return
 
@@ -29,14 +25,13 @@ export const App: React.FC = () => {
       textContent: el.innerText,
     }))
     setOutline(headingList)
-  }, [setOutline, setTitle])
+  }, [setOutline])
 
   useEffect(() => {
     updateOutlineValues()
 
     const notionApp = getNotionAppElement(document)
     if (notionApp === null) return
-    // TODO: Finely update each heading item
     const observer = new MutationObserver(updateOutlineValues)
     observer.observe(notionApp, { characterData: true, subtree: true, childList: true })
     return () => observer.disconnect()
