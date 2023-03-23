@@ -37,7 +37,7 @@ export const MousePointer: React.FC<Props> = ({ enabled }) => {
         )
         setTimeout(() => {
           setRipples((prev) => prev.filter((ripple) => ripple.id !== id))
-        }, 800)
+        }, 600)
       })
     }
     window.addEventListener('click', onClick)
@@ -125,7 +125,7 @@ const StyledRipple = styled('div', {
   backgroundColor: LaserPointerColor,
   borderRadius: 999,
   pointerEvents: 'none',
-  transitionDuration: '800ms',
+  transitionDuration: '600ms',
   opacity: 1,
   '&.fading': {
     transform: 'translate(-50%, -50%) scale(6)',
