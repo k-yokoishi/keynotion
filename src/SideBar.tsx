@@ -1,5 +1,5 @@
 import { ComponentProps, useEffect, useMemo, useState } from 'react'
-import { getNotionFrameElement } from './utils/notion'
+import { getNotionFrameElement, getTopbarElement } from './utils/notion'
 import { OutlineList } from './OutlineList'
 import { useOutlineValue } from './atoms/outline'
 import { Icon } from './components/ui/icon/Icon'
