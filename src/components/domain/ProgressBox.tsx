@@ -17,6 +17,7 @@ type Props = {
 
 export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
   const ref = useRef<HTMLDivElement>(null)
+  const [remaining, setRemaining] = useState<number>(0)
 
   const duration = getMilliseconds(item.textContent)
   const [progressAnimation, setProgressAnimation] = useState<Animation | null>(null)
@@ -68,6 +69,15 @@ export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
     }
   }, [duration, item.blockId, onFinish, progressAnimation])
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (duration) {
+        setRemaining(duration - (progressAnimation?.currentTime ?? 0))
+      }
+    }, 200)
+    return () => clearInterval(timer)
+  })
+
   const finishProgress = useCallback(() => {
     progressAnimation?.finish()
   }, [progressAnimation])
@@ -79,6 +89,13 @@ export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
       finishProgress()
     }
   }, [finishProgress, item.blockId, startProgress, timer?.state])
+
+  const remainingMinutes = Math.floor(remaining / 60_000)
+    .toString()
+    .padStart(2, '0')
+  const remainingSeconds = Math.floor((remaining % 60_000) / 1_000)
+    .toString()
+    .padStart(2, '0')
 
   return (
     <StyledProgressBox>
@@ -92,9 +109,14 @@ export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
         </StyledTimerActionWrapper>
       )}
       <StyledProgressBoxTitle>{item.textContent}</StyledProgressBoxTitle>
-      <StyledProgressRoot>
-        <StyledProgressIndicator ref={ref} />
-      </StyledProgressRoot>
+      <StyledProgressContent>
+        <StyledProgressRoot>
+          <StyledProgressIndicator ref={ref} />
+        </StyledProgressRoot>
+        <StyledRemainingTime>
+          {remainingMinutes}:{remainingSeconds}
+        </StyledRemainingTime>
+      </StyledProgressContent>
     </StyledProgressBox>
   )
 }
@@ -115,7 +137,7 @@ const StyledProgressBox = styled('div', {
   padding: 8,
   borderRadius: '$base',
   backgroundColor: 'White',
-  width: 200,
+  width: 224,
   boxShadow: '$deep',
   '&:hover': {
     [`${StyledTimerActionWrapper}`]: {
@@ -137,7 +159,8 @@ const StyledProgressBoxTitle = styled('div', {
 
 const StyledProgressRoot = styled(RadixProgress.Root, {
   overflow: 'hidden',
-  height: 10,
+  height: 12,
+  flexGrow: 1,
   borderRadius: '$base',
   backgroundColor: 'rgb(241, 241, 239)',
 })
@@ -146,4 +169,19 @@ const StyledProgressIndicator = styled(RadixProgress.Indicator, {
   width: '100%',
   height: '100%',
   transitionDuration: '17ms',
+})
+
+const StyledProgressContent = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+})
+
+const StyledRemainingTime = styled('div', {
+  fontSize: 12,
+  fontFamily: '$default',
+  display: 'flex',
+  flexWrap: 'nowrap',
+  marginLeft: 8,
+  color: '$black',
+  minWidth: 40,
 })
