@@ -15,7 +15,7 @@ type TimerAction = {
 type HoveredHeadingPosition = { x: number; y: number } | null
 
 export const EmbeddedTimerAction: React.FC = () => {
-  const { timers, start, pause, finish } = useResumableTimers()
+  const { timers, start, finish } = useResumableTimers()
   const [hoveredHeading, setHoveredHeading] = useState<TimerAction | null>(null)
   const [hoveredHeadingPosition, setHoveredHeadingPosition] = useState<HoveredHeadingPosition>(null)
   const timer = timers.find((v) => v.key === hoveredHeading?.blockId)
@@ -72,7 +72,6 @@ export const EmbeddedTimerAction: React.FC = () => {
             <TimerAction
               state={timer?.state ?? 'paused'}
               onStart={() => start(hoveredHeading.blockId)}
-              onPause={() => pause(hoveredHeading.blockId)}
               onStop={() => finish(hoveredHeading.blockId)}
             />
           </TimerActionContainer>,

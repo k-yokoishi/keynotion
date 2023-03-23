@@ -15,7 +15,6 @@ export const PopupApp = () => {
   const onChangeLaserPointerEnabled = async (enabled: boolean) => {
     const settingRepository = new SettingRepository()
     setLaserPointerEnabled(enabled)
-    console.log(enabled)
     settingRepository.setLaserPointerEnabled(enabled)
     sendMessageToCurrentTab({ type: 'updateSetting', payload: { laserPointerEnabled: enabled } })
   }

@@ -14,11 +14,10 @@ type Props = {
   item: OutlineItem
   timer?: ResumableTimer
   onStart: (blockId: string) => void
-  onPause: (blockId: string) => void
   onFinish: (blockId: string) => void
 }
 
-export const OutlineListItem: React.FC<Props> = ({ item, timer, onStart, onPause, onFinish }) => {
+export const OutlineListItem: React.FC<Props> = ({ item, timer, onStart, onFinish }) => {
   const duration = getMilliseconds(item.textContent)
 
   return (
@@ -34,7 +33,6 @@ export const OutlineListItem: React.FC<Props> = ({ item, timer, onStart, onPause
           <TimerAction
             state={timer?.state ?? 'paused'}
             onStart={() => onStart(item.blockId)}
-            onPause={() => onPause(item.blockId)}
             onStop={() => onFinish(item.blockId)}
           />
         </StyledOutlineActionContainer>

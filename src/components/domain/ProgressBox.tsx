@@ -68,10 +68,6 @@ export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
     }
   }, [duration, item.blockId, onFinish, progressAnimation])
 
-  const pauseProgress = useCallback(() => {
-    progressAnimation?.pause()
-  }, [progressAnimation])
-
   const finishProgress = useCallback(() => {
     progressAnimation?.finish()
   }, [progressAnimation])
@@ -79,12 +75,10 @@ export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
   useEffect(() => {
     if (timer?.state === 'running') {
       startProgress()
-    } else if (timer?.state === 'paused') {
-      pauseProgress()
     } else if (timer?.state === 'finished') {
       finishProgress()
     }
-  }, [finishProgress, item.blockId, pauseProgress, startProgress, timer?.state])
+  }, [finishProgress, item.blockId, startProgress, timer?.state])
 
   return (
     <StyledProgressBox>
@@ -93,7 +87,6 @@ export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
           <TimerAction
             state={timer.state}
             onStart={startProgress}
-            onPause={pauseProgress}
             onStop={() => onFinish(item.blockId)}
           />
         </StyledTimerActionWrapper>

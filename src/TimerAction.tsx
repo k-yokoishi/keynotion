@@ -5,7 +5,7 @@ import { styled } from './styles/theme'
 type Props = {
   state: TimerState
   onStart: () => void
-  onPause: () => void
+  onPause?: () => void
   onStop: () => void
 }
 
@@ -14,7 +14,9 @@ export const TimerAction: React.FC<Props> = ({ state, onStart, onPause, onStop }
     <TimerActionContainer>
       {state === 'running' ? (
         <>
-          <Icon icon="pause-circle" color="rgba(203, 145, 47, 1)" onClick={onPause} />
+          {onPause !== undefined && (
+            <Icon icon="pause-circle" color="rgba(203, 145, 47, 1)" onClick={onPause} />
+          )}
           <Icon icon="stop-circle" color="rgba(212, 76, 71, 1)" onClick={onStop} />
         </>
       ) : (

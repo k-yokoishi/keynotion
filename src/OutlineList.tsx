@@ -14,7 +14,7 @@ type Props = {
 }
 
 export const OutlineList: React.FC<Props> = ({ outlineList }) => {
-  const { timers, start, pause, finish } = useResumableTimers()
+  const { timers, start, finish } = useResumableTimers()
   return (
     <StyledOutline>
       <StyledOutlineList>
@@ -26,7 +26,6 @@ export const OutlineList: React.FC<Props> = ({ outlineList }) => {
               item={item}
               timer={timer}
               onStart={start}
-              onPause={pause}
               onFinish={finish}
             />
           )
