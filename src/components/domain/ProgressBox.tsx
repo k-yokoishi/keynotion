@@ -17,7 +17,7 @@ type Props = {
 
 export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
   const ref = useRef<HTMLDivElement>(null)
-  const [remaining, setRemaining] = useState<number>(0)
+  const [leftTime, setLeftTime] = useState<number>(0)
 
   const duration = getMilliseconds(item.textContent)
   const [progressAnimation, setProgressAnimation] = useState<Animation | null>(null)
@@ -62,21 +62,23 @@ export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
         }
       )
       setProgressAnimation(animation)
-      animation.onfinish = () => {
-        onFinish(item.blockId)
-        setProgressAnimation(null)
-      }
+      animation.onfinish = () => onFinish(item.blockId)
     }
   }, [duration, item.blockId, onFinish, progressAnimation])
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (duration) {
-        setRemaining(duration - (progressAnimation?.currentTime ?? 0))
+    const intervalTimer = setInterval(() => {
+      if (duration !== null) {
+        setLeftTime(duration - (progressAnimation?.currentTime ?? 0))
       }
-    }, 200)
-    return () => clearInterval(timer)
-  })
+    }, 100)
+    return () => {
+      clearInterval(intervalTimer)
+      if (timer?.state === 'finished') {
+        setProgressAnimation(null)
+      }
+    }
+  }, [duration, progressAnimation?.currentTime, timer?.state])
 
   const finishProgress = useCallback(() => {
     progressAnimation?.finish()
@@ -90,10 +92,11 @@ export const ProgressBox: FC<Props> = ({ item, timer, onFinish }) => {
     }
   }, [finishProgress, item.blockId, startProgress, timer?.state])
 
-  const remainingMinutes = Math.floor(remaining / 60_000)
+  const adjustedLeftTime = leftTime + 1000
+  const remainingMinutes = Math.floor(adjustedLeftTime / 60_000)
     .toString()
     .padStart(2, '0')
-  const remainingSeconds = Math.floor((remaining % 60_000) / 1_000)
+  const remainingSeconds = Math.floor((adjustedLeftTime % 60_000) / 1_000)
     .toString()
     .padStart(2, '0')
 
