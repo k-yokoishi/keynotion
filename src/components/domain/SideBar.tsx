@@ -1,5 +1,4 @@
 import { styled } from '@stitches/react'
-import { isElement } from 'lodash'
 import { ComponentProps, useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useOutlineValue } from '../../atoms/outline'
@@ -23,13 +22,21 @@ export const SideBar = () => {
     const touchRightOfWindow = distanceFromRight <= 32
     return sidebarHovered || touchRightOfWindow ? 'floatingOpened' : 'floatingClosed'
   }, [distanceFromRight, fixed, sidebarHovered])
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const rootEl = getNotionFrameElement(document)
-    if (rootEl) {
-      setRootEl(rootEl)
-    }
-  }, [])
+    if (mounted) return
+
+    const observer = new MutationObserver(() => {
+      const rootEl = getNotionFrameElement(document)
+      if (rootEl) {
+        setRootEl(rootEl)
+        setMounted(true)
+      }
+    })
+    observer.observe(document, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [mounted])
 
   useEffect(() => {
     const scroller = document.querySelector<HTMLDivElement>('.notion-frame .notion-scroller')
@@ -64,7 +71,8 @@ export const SideBar = () => {
 
   return (
     <>
-      {rootEl &&
+      {mounted &&
+        rootEl &&
         createPortal(
           <StyledSideBarRoot>
             <StyledSideBarContainer
