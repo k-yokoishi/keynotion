@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Keynotion",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "action": {
-    "default_popup": "src/apps/popup/index.html",
+    "default_popup": "src/pages/popup/index.html",
     "default_icon": "src/assets/icon-16.png"
   },
   "icons": {
@@ -18,7 +18,7 @@
   ],
   "content_scripts": [
     {
-      "js": ["src/content.tsx"],
+      "js": ["src/pages/contentScript/index.tsx"],
       "matches": ["https://www.notion.so/*", "https://*.notion.site/*"]
     }
   ]
