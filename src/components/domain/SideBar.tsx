@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 import { useOutlineValue } from '../../atoms/outline'
 import { useDocument } from '../../hooks/useDocument'
 import { useMouseMove } from '../../hooks/useMouseMove'
-import { getNotionFrameElement } from '../../utils/notion'
+import { getNotionFrameElement, getProgressBarElement } from '../../utils/notion'
 import { Icon } from '../ui/icon/Icon'
 import { OutlineList } from './OutlineList'
 
@@ -22,21 +22,19 @@ export const SideBar = () => {
     const touchRightOfWindow = distanceFromRight <= 32
     return sidebarHovered || touchRightOfWindow ? 'floatingOpened' : 'floatingClosed'
   }, [distanceFromRight, fixed, sidebarHovered])
-  const [mounted, setMounted] = useState(false)
+  const [progressBarVisible, setProgressBarVisible] = useState(false)
 
   useEffect(() => {
-    if (mounted) return
-
+    // Wait for the notion frame element to be shown
     const observer = new MutationObserver(() => {
       const rootEl = getNotionFrameElement(document)
-      if (rootEl) {
-        setRootEl(rootEl)
-        setMounted(true)
-      }
+      if (rootEl) setRootEl(rootEl)
+
+      setProgressBarVisible(getProgressBarElement(document) !== null)
     })
     observer.observe(document, { childList: true, subtree: true })
     return () => observer.disconnect()
-  }, [mounted])
+  }, [])
 
   useEffect(() => {
     const scroller = document.querySelector<HTMLDivElement>('.notion-frame .notion-scroller')
@@ -71,8 +69,8 @@ export const SideBar = () => {
 
   return (
     <>
-      {mounted &&
-        rootEl &&
+      {rootEl &&
+        !progressBarVisible &&
         createPortal(
           <StyledSideBarRoot>
             <StyledSideBarContainer

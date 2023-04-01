@@ -159,3 +159,9 @@ export const findParentBlock = (el: Node | null): HTMLElement | null => {
     return null
   }
 }
+
+export const getProgressBarElement = (doc: Document) => {
+  const frameElement = getNotionFrameElement(doc)
+  if (!frameElement) return false
+  return frameElement.querySelector('[role="progressbar"]')
+}
