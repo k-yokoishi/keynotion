@@ -2,7 +2,7 @@ import { ComponentProps, memo, useCallback, useEffect, useState } from 'react'
 import { useSetOutline } from '../../atoms/outline'
 import { ProgressController } from '../../components/domain/ProgressController'
 import { EmbeddedTimerAction } from '../../components/domain/EmbeddedTimerAction'
-import { MousePointer } from '../../components/domain/MousePointer'
+import { LaserPointer } from '../../components/domain/LaserPointer'
 import { SettingRepository } from '../../repositories/settingRepository'
 import { addListenerOnUpdateSetting } from '../../services/messageService'
 import { SideBar } from '../../components/domain/SideBar'
@@ -48,8 +48,8 @@ export const ContentScriptApp: React.FC = () => {
 
   const MousePointerMemo = memo(function MousePointerMemo({
     enabled,
-  }: ComponentProps<typeof MousePointer>) {
-    return <MousePointer enabled={enabled} />
+  }: ComponentProps<typeof LaserPointer>) {
+    return <LaserPointer enabled={enabled} />
   })
 
   return (

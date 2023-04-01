@@ -13,7 +13,7 @@ type PointerPosition = {
 
 const hideCursorClass = 'kn-hide-cursor'
 
-export const MousePointer: React.FC<Props> = ({ enabled }) => {
+export const LaserPointer: React.FC<Props> = ({ enabled }) => {
   const [pointerPosition, setPointerPosition] = useState<PointerPosition>(null)
   const [ripples, setRipples] = useState<{ id: string; x: number; y: number; fading: boolean }[]>(
     []
