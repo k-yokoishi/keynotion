@@ -1,8 +1,8 @@
-import { ResumableTimer } from './atoms/resumableTimer'
-import { styled } from './styles/theme'
+import { styled } from '@stitches/react'
+import { HeaderLevel } from '../../atoms/outline'
+import { ResumableTimer } from '../../atoms/resumableTimer'
+import { getMilliseconds } from '../../utils/datetime'
 import { TimerAction } from './TimerAction'
-import { getMilliseconds } from './utils/datetime'
-import { HeaderLevel } from './utils/notion'
 
 type OutlineItem = {
   blockId: string

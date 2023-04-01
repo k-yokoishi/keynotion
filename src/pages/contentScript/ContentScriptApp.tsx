@@ -1,19 +1,19 @@
 import { ComponentProps, memo, useCallback, useEffect, useState } from 'react'
-import { useSetOutline } from './atoms/outline'
-import { ProgressController } from './components/domain/ProgressController'
-import { EmbeddedTimerAction } from './EmbeddedTimerAction'
-import { MousePointer } from './MousePointer'
-import { SettingRepository } from './repositories/settingRepository'
-import { addListenerOnUpdateSetting } from './services/messageService'
-import { SideBar } from './SideBar'
+import { useSetOutline } from '../../atoms/outline'
+import { ProgressController } from '../../components/domain/ProgressController'
+import { EmbeddedTimerAction } from '../../components/domain/EmbeddedTimerAction'
+import { MousePointer } from '../../components/domain/MousePointer'
+import { SettingRepository } from '../../repositories/settingRepository'
+import { addListenerOnUpdateSetting } from '../../services/messageService'
+import { SideBar } from '../../components/domain/SideBar'
 import {
   getBlockInfo,
   getHeaderBlockElements,
   getHeaderLevel,
   getNotionAppElement,
-} from './utils/notion'
+} from '../../utils/notion'
 
-export const App: React.FC = () => {
+export const ContentScriptApp: React.FC = () => {
   const setOutline = useSetOutline()
   const updateOutlineValues = useCallback(() => {
     const pageContent = document.querySelector('div.notion-page-content')

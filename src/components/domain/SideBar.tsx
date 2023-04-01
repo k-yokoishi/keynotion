@@ -1,13 +1,13 @@
+import { styled } from '@stitches/react'
+import { isElement } from 'lodash'
 import { ComponentProps, useEffect, useMemo, useState } from 'react'
-import { getNotionFrameElement, getTopbarElement } from './utils/notion'
-import { OutlineList } from './OutlineList'
-import { useOutlineValue } from './atoms/outline'
-import { Icon } from './components/ui/icon/Icon'
-import { useMouseMove } from './hooks/useMouseMove'
 import { createPortal } from 'react-dom'
-import { isElement } from './utils/dom'
-import { styled } from './styles/theme'
-import { useDocument } from './hooks/useDocument'
+import { useOutlineValue } from '../../atoms/outline'
+import { useDocument } from '../../hooks/useDocument'
+import { useMouseMove } from '../../hooks/useMouseMove'
+import { getNotionFrameElement } from '../../utils/notion'
+import { Icon } from '../ui/icon/Icon'
+import { OutlineList } from './OutlineList'
 
 const SideBarWidth = '260px'
 
@@ -32,8 +32,8 @@ export const SideBar = () => {
   }, [])
 
   useEffect(() => {
-    const scroller = document.querySelector('.notion-frame .notion-scroller')
-    if (scroller && isElement(scroller)) {
+    const scroller = document.querySelector<HTMLDivElement>('.notion-frame .notion-scroller')
+    if (scroller) {
       const { transitionDuration: originalTransitionDuration, width: originalWidth } =
         scroller.style
       scroller.style.transitionDuration = '300ms'
@@ -46,8 +46,8 @@ export const SideBar = () => {
   }, [pathname])
 
   useEffect(() => {
-    const scroller = document.querySelector('.notion-frame .notion-scroller')
-    if (scroller === null || !isElement(scroller)) return
+    const scroller = document.querySelector<HTMLDivElement>('.notion-frame .notion-scroller')
+    if (scroller === null) return
     if (state === 'fixed' || state === 'floatingOpened') {
       scroller.style.width = `calc(100% - ${SideBarWidth})`
       return

@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import * as RadixProgress from '@radix-ui/react-progress'
 import { ResumableTimer } from '../../atoms/resumableTimer'
 import { getMilliseconds } from '../../utils/datetime'
-import { TimerAction } from '../../TimerAction'
+import { TimerAction } from './TimerAction'
 import { styled } from '../../styles/theme'
 
 type OutlineItem = {

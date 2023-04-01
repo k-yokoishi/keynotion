@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { getBlockInfo, getHeaderLevel } from './utils/notion'
+import { getBlockInfo, getHeaderLevel } from '../../utils/notion'
 import { createPortal } from 'react-dom'
-import { TimerAction } from './TimerAction'
-import { useResumableTimers } from './atoms/resumableTimer'
-import { isElement } from './utils/dom'
-import { getMilliseconds } from './utils/datetime'
-import { styled } from './styles/theme'
+import { TimerAction } from '../../components/domain/TimerAction'
+import { useResumableTimers } from '../../atoms/resumableTimer'
+import { isElement } from '../../utils/dom'
+import { getMilliseconds } from '../../utils/datetime'
+import { styled } from '../../styles/theme'
 
 type TimerAction = {
   blockId: string

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import throttle from 'lodash/throttle'
-import { styled } from './styles/theme'
+import { styled } from '../../styles/theme'
 import { globalCss } from '@stitches/react'
 
 type Props = { enabled: boolean }
@@ -18,6 +18,7 @@ export const MousePointer: React.FC<Props> = ({ enabled }) => {
   const [ripples, setRipples] = useState<{ id: string; x: number; y: number; fading: boolean }[]>(
     []
   )
+  const [keynotionRoot, setKeynotionRoot] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
     const onMouseMove = throttle((e: MouseEvent) => {
@@ -70,7 +71,12 @@ export const MousePointer: React.FC<Props> = ({ enabled }) => {
     }
   }, [enabled])
 
-  const keynotionRoot = document.getElementById('kn-root')
+  useEffect(() => {
+    const keynotionRoot = document.getElementById('kn-root')
+    if (keynotionRoot) {
+      setKeynotionRoot(keynotionRoot)
+    }
+  }, [])
 
   return (
     <>

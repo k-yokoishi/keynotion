@@ -1,6 +1,6 @@
-import { TimerState } from './atoms/resumableTimer'
-import { Icon } from './components/ui/icon/Icon'
-import { styled } from './styles/theme'
+import { styled } from '@stitches/react'
+import { TimerState } from '../../atoms/resumableTimer'
+import { Icon } from '../ui/icon/Icon'
 
 type Props = {
   state: TimerState
