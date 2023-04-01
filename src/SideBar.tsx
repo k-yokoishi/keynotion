@@ -15,6 +15,7 @@ export const SideBar = () => {
   const outline = useOutlineValue()
   const [fixed, setFixed] = useState(true)
   const [sidebarHovered, setSideBarHovered] = useState(false)
+  const [rootEl, setRootEl] = useState<Element | null>(null)
   const { title, pathname } = useDocument(document)
   const { distanceFromRight } = useMouseMove(document.documentElement)
   const state = useMemo<ComponentProps<typeof StyledSideBarContainer>['state']>(() => {
@@ -22,6 +23,13 @@ export const SideBar = () => {
     const touchRightOfWindow = distanceFromRight <= 32
     return sidebarHovered || touchRightOfWindow ? 'floatingOpened' : 'floatingClosed'
   }, [distanceFromRight, fixed, sidebarHovered])
+
+  useEffect(() => {
+    const rootEl = getNotionFrameElement(document)
+    if (rootEl) {
+      setRootEl(rootEl)
+    }
+  }, [])
 
   useEffect(() => {
     const scroller = document.querySelector('.notion-frame .notion-scroller')
@@ -54,38 +62,36 @@ export const SideBar = () => {
     setFixed((prev) => !prev)
   }
 
-  const rootEl = getNotionFrameElement(document)
-  if (rootEl === null) throw new Error('notion-frame not found')
-
   return (
     <>
-      {createPortal(
-        <StyledSideBarRoot>
-          <StyledSideBarContainer
-            state={state}
-            onMouseEnter={() => setSideBarHovered(true)}
-            onMouseLeave={() => setSideBarHovered(false)}
-          >
-            <StyledSideBar>
-              <StyledSideBarInner>
-                <StyledSideBarHeader>
-                  <StyledSideBarTitle>{title}</StyledSideBarTitle>
-                  <StyledSideBarAction onClick={handleToggleOpened}>
-                    <Icon
-                      icon={fixed ? 'chevron-left' : 'thumbtack'}
-                      color={'rgba(55, 53, 47, 0.45)'}
-                    />
-                  </StyledSideBarAction>
-                </StyledSideBarHeader>
-                <StyledSideBarContent>
-                  <OutlineList outlineList={filteredHeadingList} />
-                </StyledSideBarContent>
-              </StyledSideBarInner>
-            </StyledSideBar>
-          </StyledSideBarContainer>
-        </StyledSideBarRoot>,
-        rootEl
-      )}
+      {rootEl &&
+        createPortal(
+          <StyledSideBarRoot>
+            <StyledSideBarContainer
+              state={state}
+              onMouseEnter={() => setSideBarHovered(true)}
+              onMouseLeave={() => setSideBarHovered(false)}
+            >
+              <StyledSideBar>
+                <StyledSideBarInner>
+                  <StyledSideBarHeader>
+                    <StyledSideBarTitle>{title}</StyledSideBarTitle>
+                    <StyledSideBarAction onClick={handleToggleOpened}>
+                      <Icon
+                        icon={fixed ? 'chevron-left' : 'thumbtack'}
+                        color={'rgba(55, 53, 47, 0.45)'}
+                      />
+                    </StyledSideBarAction>
+                  </StyledSideBarHeader>
+                  <StyledSideBarContent>
+                    <OutlineList outlineList={filteredHeadingList} />
+                  </StyledSideBarContent>
+                </StyledSideBarInner>
+              </StyledSideBar>
+            </StyledSideBarContainer>
+          </StyledSideBarRoot>,
+          rootEl
+        )}
     </>
   )
 }
