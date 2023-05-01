@@ -86,9 +86,8 @@ export const LaserPointer: React.FC<Props> = ({ enabled }) => {
         createPortal(
           <>
             <StyledMousePointer
-              css={{
-                top: pointerPosition.y,
-                left: pointerPosition.x,
+              style={{
+                transform: `translate(${pointerPosition.x}px, ${pointerPosition.y}px)`,
               }}
             />
             {ripples.map((ripple) => (
@@ -112,6 +111,8 @@ const LaserPointerColor = 'rgba(212, 76, 71, 1)'
 
 const StyledMousePointer = styled('div', {
   position: 'absolute',
+  top: 0,
+  left: 0,
   zIndex: 999999,
   width: 8,
   height: 8,
