@@ -3,8 +3,6 @@ import { useSetOutline } from '../../atoms/outline'
 import { ProgressController } from '../../components/domain/ProgressController'
 import { EmbeddedTimerAction } from '../../components/domain/EmbeddedTimerAction'
 import { LaserPointer } from '../../components/domain/LaserPointer'
-import { SettingRepository } from '../../repositories/settingRepository'
-import { addListenerOnUpdateSetting } from '../../services/messageService'
 import { SideBar } from '../../components/domain/SideBar'
 import {
   getBlockInfo,
@@ -12,6 +10,7 @@ import {
   getHeaderLevel,
   getNotionAppElement,
 } from '../../utils/notion'
+import { useSetting } from '../../atoms/setting'
 
 export const ContentScriptApp: React.FC = () => {
   const setOutline = useSetOutline()
@@ -37,16 +36,7 @@ export const ContentScriptApp: React.FC = () => {
     return () => observer.disconnect()
   }, [updateOutlineValues])
 
-  addListenerOnUpdateSetting((setting) => {
-    setLasersPointerEnabled(setting.laserPointerEnabled)
-    setSideBarEnabled(setting.sideBarEnabled)
-  })
-  const [laserPointerEnabled, setLasersPointerEnabled] = useState(false)
-  const [sideBarEnabled, setSideBarEnabled] = useState(false)
-
-  useEffect(() => {
-    new SettingRepository().getLaserPointerEnabled().then(setLasersPointerEnabled)
-  }, [])
+  const { setting } = useSetting()
 
   const MousePointerMemo = memo(function MousePointerMemo({
     enabled,
@@ -56,10 +46,15 @@ export const ContentScriptApp: React.FC = () => {
 
   return (
     <>
-      <MousePointerMemo enabled={laserPointerEnabled} />
-      <EmbeddedTimerAction />
-      <SideBar enabled={sideBarEnabled} />
-      <ProgressController />
+      <div>setting:{JSON.stringify(setting)}</div>
+      {setting && (
+        <>
+          <MousePointerMemo enabled={setting.laserPointerEnabled} />
+          <EmbeddedTimerAction />
+          <SideBar enabled={setting.sideBarEnabled} initialFixed={setting.lastSideBarFixed} />
+          <ProgressController />
+        </>
+      )}
     </>
   )
 }

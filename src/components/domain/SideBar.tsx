@@ -1,5 +1,5 @@
 import { styled } from '@stitches/react'
-import { ComponentProps, useEffect, useMemo, useState } from 'react'
+import { ComponentProps, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useOutlineValue } from '../../atoms/outline'
 import { useDocument } from '../../hooks/useDocument'
@@ -7,12 +7,16 @@ import { useMouseMove } from '../../hooks/useMouseMove'
 import { getNotionFrameElement, getProgressBarElement } from '../../utils/notion'
 import { Icon } from '../ui/icon/Icon'
 import { OutlineList } from './OutlineList'
+import { SettingRepository } from '../../repositories/settingRepository'
 
 const SideBarWidth = '260px'
 
-export const SideBar: React.FC<{ enabled: boolean }> = ({ enabled }) => {
+export const SideBar: React.FC<{ enabled: boolean; initialFixed: boolean }> = ({
+  enabled,
+  initialFixed,
+}) => {
   const outline = useOutlineValue()
-  const [fixed, setFixed] = useState(true)
+  const [fixed, setFixed] = useState(initialFixed)
   const [sidebarHovered, setSideBarHovered] = useState(false)
   const [rootEl, setRootEl] = useState<Element | null>(null)
   const { title, pathname } = useDocument(document)
@@ -37,35 +41,42 @@ export const SideBar: React.FC<{ enabled: boolean }> = ({ enabled }) => {
     return () => observer.disconnect()
   }, [])
 
+  const adjustScrollerWidth = useCallback((_state: typeof state) => {
+    const scroller = document.querySelector<HTMLDivElement>('.notion-frame .notion-scroller')
+    if (scroller === null) return
+    if (_state === 'fixed' || _state === 'floatingOpened') {
+      scroller.style.width = `calc(100% - ${SideBarWidth})`
+    } else if (_state === 'fixedClosed' || _state === 'floatingClosed') {
+      scroller.style.width = '100%'
+    }
+  }, [])
+
   useEffect(() => {
     const scroller = document.querySelector<HTMLDivElement>('.notion-frame .notion-scroller')
     if (scroller) {
       const { transitionDuration: originalTransitionDuration, width: originalWidth } =
         scroller.style
       scroller.style.transitionDuration = '300ms'
-      scroller.style.width = `calc(100% - ${SideBarWidth})`
+      adjustScrollerWidth(state)
       return () => {
         scroller.style.transitionDuration = originalTransitionDuration
         scroller.style.width = originalWidth
       }
     }
-  }, [pathname])
+  }, [adjustScrollerWidth, pathname, state])
 
   useEffect(() => {
-    const scroller = document.querySelector<HTMLDivElement>('.notion-frame .notion-scroller')
-    if (scroller === null) return
-    if (state === 'fixed' || state === 'floatingOpened') {
-      scroller.style.width = `calc(100% - ${SideBarWidth})`
-      return
-    } else if (state === 'fixedClosed' || state === 'floatingClosed') {
-      scroller.style.width = '100%'
-    }
-  }, [pathname, state])
+    adjustScrollerWidth(state)
+  }, [adjustScrollerWidth, state])
 
   const filteredHeadingList = outline.filter((heading) => heading.textContent !== '')
 
   const handleToggleOpened = () => {
-    setFixed((prev) => !prev)
+    setFixed((prev) => {
+      const toggled = !prev
+      new SettingRepository().setLastSideBarFixed(toggled)
+      return toggled
+    })
   }
 
   return (
