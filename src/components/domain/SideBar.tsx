@@ -10,7 +10,7 @@ import { OutlineList } from './OutlineList'
 
 const SideBarWidth = '260px'
 
-export const SideBar = () => {
+export const SideBar: React.FC<{ enabled: boolean }> = ({ enabled }) => {
   const outline = useOutlineValue()
   const [fixed, setFixed] = useState(true)
   const [sidebarHovered, setSideBarHovered] = useState(false)
@@ -18,10 +18,11 @@ export const SideBar = () => {
   const { title, pathname } = useDocument(document)
   const { distanceFromRight } = useMouseMove(document.documentElement)
   const state = useMemo<ComponentProps<typeof StyledSideBarContainer>['state']>(() => {
+    if (!enabled) return fixed ? 'fixedClosed' : 'floatingClosed'
     if (fixed) return 'fixed'
     const touchRightOfWindow = distanceFromRight <= 32
     return sidebarHovered || touchRightOfWindow ? 'floatingOpened' : 'floatingClosed'
-  }, [distanceFromRight, fixed, sidebarHovered])
+  }, [distanceFromRight, enabled, fixed, sidebarHovered])
   const [progressBarVisible, setProgressBarVisible] = useState(false)
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export const SideBar = () => {
     if (state === 'fixed' || state === 'floatingOpened') {
       scroller.style.width = `calc(100% - ${SideBarWidth})`
       return
-    } else if (state === 'floatingClosed') {
+    } else if (state === 'fixedClosed' || state === 'floatingClosed') {
       scroller.style.width = '100%'
     }
   }, [pathname, state])
@@ -182,6 +183,10 @@ const StyledSideBarContainer = styled('div', {
     state: {
       fixed: {
         transform: 'translate(0, 0)',
+        opacity: 1,
+      },
+      fixedClosed: {
+        transform: `translate(${SideBarWidth}, 0)`,
         opacity: 1,
       },
       floatingOpened: {

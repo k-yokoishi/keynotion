@@ -9,6 +9,7 @@ export type UpdateSettingMessage = MessageBase<
   'updateSetting',
   {
     laserPointerEnabled: boolean
+    sideBarEnabled: boolean
   }
 >
 

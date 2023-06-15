@@ -39,8 +39,10 @@ export const ContentScriptApp: React.FC = () => {
 
   addListenerOnUpdateSetting((setting) => {
     setLasersPointerEnabled(setting.laserPointerEnabled)
+    setSideBarEnabled(setting.sideBarEnabled)
   })
   const [laserPointerEnabled, setLasersPointerEnabled] = useState(false)
+  const [sideBarEnabled, setSideBarEnabled] = useState(false)
 
   useEffect(() => {
     new SettingRepository().getLaserPointerEnabled().then(setLasersPointerEnabled)
@@ -56,7 +58,7 @@ export const ContentScriptApp: React.FC = () => {
     <>
       <MousePointerMemo enabled={laserPointerEnabled} />
       <EmbeddedTimerAction />
-      <SideBar />
+      <SideBar enabled={sideBarEnabled} />
       <ProgressController />
     </>
   )
