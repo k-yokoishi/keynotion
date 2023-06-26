@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Keynotion",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "action": {
     "default_popup": "src/pages/popup/index.html",
     "default_icon": "src/assets/icon-16.png"
