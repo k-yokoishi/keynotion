@@ -46,7 +46,6 @@ export const ContentScriptApp: React.FC = () => {
 
   return (
     <>
-      <div>setting:{JSON.stringify(setting)}</div>
       {setting && (
         <>
           <MousePointerMemo enabled={setting.laserPointerEnabled} />
