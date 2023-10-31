@@ -57,6 +57,9 @@ export const getTopbarElement = (doc: Document) => doc.querySelector('.notion-to
 export const getNotionFrameElement = (doc: Document) =>
   doc.getElementsByClassName(NotionClass.Frame)[0]
 
+export const getNotionScroller = (doc: Document) =>
+  doc.querySelector<HTMLDivElement>('.notion-frame .notion-scroller')
+
 export const getBlockElementById = (blockId: string) => {
   return document.querySelector(`[${NotionAttr.BlockId}="${blockId}"]`) ?? null
 }

@@ -8,6 +8,7 @@ type OutlineItem = {
   blockId: string
   level: HeaderLevel
   textContent: string
+  currentlyViewed: boolean
 }
 
 type Props = {
@@ -21,10 +22,18 @@ export const OutlineListItem: React.FC<Props> = ({ item, timer, onStart, onFinis
   const duration = getMilliseconds(item.textContent)
 
   return (
-    <StyledOutlineListItem key={item.blockId}>
+    <StyledOutlineListItem
+      key={item.blockId}
+      style={{
+        backgroundColor: item.currentlyViewed ? 'rgba(0, 0, 0, 0.04)' : '',
+      }}>
       <StyledOutlineItem
         href={`${location.pathname}#${item.blockId.replaceAll('-', '')}`}
         level={item.level}
+        style={{
+          color: item.currentlyViewed ? 'rgb(55, 53, 47)' : '',
+          fontWeight: item.currentlyViewed ? 600 : '',
+        }}
       >
         {item.textContent}
       </StyledOutlineItem>

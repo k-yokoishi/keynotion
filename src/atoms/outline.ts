@@ -6,6 +6,7 @@ type OutlineItem = {
   blockId: string
   level: HeaderLevel
   textContent: string
+  currentlyViewed: boolean
 }
 
 const outlineAtom = atom<OutlineItem[]>([])
