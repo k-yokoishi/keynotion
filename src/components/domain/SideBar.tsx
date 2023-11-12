@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 import { useOutlineValue } from '../../atoms/outline'
 import { useDocument } from '../../hooks/useDocument'
 import { useMouseMove } from '../../hooks/useMouseMove'
-import { getNotionFrameElement, getProgressBarElement } from '../../utils/notion'
+import { getNotionFrameElement, getNotionScroller, getProgressBarElement } from '../../utils/notion'
 import { Icon } from '../ui/icon/Icon'
 import { OutlineList } from './OutlineList'
 import { SettingRepository } from '../../repositories/settingRepository'
@@ -42,7 +42,7 @@ export const SideBar: React.FC<{ enabled: boolean; initialFixed: boolean }> = ({
   }, [])
 
   const adjustScrollerWidth = useCallback((_state: typeof state) => {
-    const scroller = document.querySelector<HTMLDivElement>('.notion-frame .notion-scroller')
+    const scroller = getNotionScroller(document)
     if (scroller === null) return
     if (_state === 'fixed' || _state === 'floatingOpened') {
       scroller.style.width = `calc(100% - ${SideBarWidth})`
@@ -52,7 +52,7 @@ export const SideBar: React.FC<{ enabled: boolean; initialFixed: boolean }> = ({
   }, [])
 
   useEffect(() => {
-    const scroller = document.querySelector<HTMLDivElement>('.notion-frame .notion-scroller')
+    const scroller = getNotionScroller(document)
     if (scroller) {
       const { transitionDuration: originalTransitionDuration, width: originalWidth } =
         scroller.style

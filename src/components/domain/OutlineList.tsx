@@ -7,6 +7,7 @@ type OutlineItem = {
   blockId: string
   level: HeaderLevel
   textContent: string
+  currentlyViewed: boolean
 }
 
 type Props = {
